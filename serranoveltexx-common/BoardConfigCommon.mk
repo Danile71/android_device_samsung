@@ -7,7 +7,7 @@
 LOCAL_PATH := device/samsung/serranoveltexx-common
 
 # Assert
-TARGET_OTA_ASSERT_DEVICE := samsung_sm_g530h
+TARGET_OTA_ASSERT_DEVICE := samsung_sm_I9195I
 
 # Platform
 TARGET_BOARD_PLATFORM           := msm8916

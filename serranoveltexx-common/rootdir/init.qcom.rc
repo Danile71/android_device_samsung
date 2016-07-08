@@ -1414,8 +1414,13 @@ service wifi-crda /system/bin/sh /system/etc/init.crda.sh
    disabled
    oneshot
 
+service mpdecision /system/bin/mpdecision --avg_comp
+   user root
+   disabled
+
 on property:sys.boot_completed=1
     start qcom-post-boot
+    start mpdecision
 
 service atfwd /system/bin/ATFWD-daemon
     class late_start
@@ -1609,6 +1614,8 @@ service msm_irqbalance /system/bin/msm_irqbalance -f /system/vendor/etc/msm_irqb
     user root
     group root
     disabled
+
+
 
 # Change IO scheduler to CFQ after boot_complete
 on property:sys.boot_completed=1

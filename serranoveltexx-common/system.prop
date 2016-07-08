@@ -1,3 +1,4 @@
+ro.product.model=I9195I
 # RIL
 rild.libpath=/system/lib/libsec-ril.so
 rild.libargs=-d /dev/smd0
@@ -12,7 +13,7 @@ persist.rild.nitz_short_ons_2=
 persist.rild.nitz_short_ons_3=
 ril.subscription.types=NV,RUIM
 DEVICE_PROVISIONED=1
-ro.telephony.ril_class=SerranoRIL
+ro.telephony.ril_class=SamsungGrandPrimeRIL
 
 # Data modules (For evolution RIL model)
 ro.use_data_netmgrd=false
@@ -20,6 +21,9 @@ persist.data.netmgrd.qos.enable=false
 ro.telephony.default_network=0
 telephony.lteOnGsmDevice=0
 persist.radio.apm_sim_not_pwdn=1
+ro.min_freq=200000
+
+
 
 # RIL
 persist.radio.multisim.config=none

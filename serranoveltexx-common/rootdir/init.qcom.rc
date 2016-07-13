@@ -53,9 +53,9 @@ on init
     mkdir /storage/sdcard0 0700 root root
     mkdir /storage/sdcard1 0666 root root
 
-    export EXTERNAL_STORAGE /storage/sdcard1
+    export EXTERNAL_STORAGE /storage/emulated
 
-    export SECONDARY_STORAGE /storage/emulated/legacy
+    export SECONDARY_STORAGE /storage/sdcard1
     export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
     export EMULATED_STORAGE_TARGET /storage/emulated
 

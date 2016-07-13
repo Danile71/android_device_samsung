@@ -137,8 +137,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     audiod \
     audio.a2dp.default \
-    audio_policy.msm8916 \
-    audio.primary.msm8916 \
     audio.primary.default \
     audio.r_submix.default \
     audio.usb.default \

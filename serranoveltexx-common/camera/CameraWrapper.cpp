@@ -137,6 +137,11 @@ static char *camera_fixup_getparams(int id, const char *settings)
         sprintf(tmp, "%s,off", hfrValues);
         params.set(KEY_VIDEO_HFR_VALUES, tmp);
     }
+    const char *pict = params.get(android::CameraParameters::KEY_SUPPORTED_PICTURE_SIZES);
+
+    if (pict &&  strstr(pict, "1392x1392"))
+	params.set(android::CameraParameters::KEY_SUPPORTED_PREVIEW_SIZES,
+              "1280x960,1280x720,1056x864,960x720,720x480,640x480,352x288,320x240,176x144");
 
     /* Enforce video-snapshot-supported to true */
     params.set(android::CameraParameters::KEY_VIDEO_SNAPSHOT_SUPPORTED, "true");
@@ -159,7 +164,7 @@ static char *camera_fixup_setparams(struct camera_device *device, const char *se
     params.unflatten(android::String8(settings));
 
 #if !LOG_NDEBUG
-    ALOGV("%s: original parameters:", __FUNCTION__);
+    ALOGE("%s: original parameters:", __FUNCTION__);
     params.dump();
 #endif
 
@@ -193,6 +198,12 @@ static char *camera_fixup_setparams(struct camera_device *device, const char *se
             params.set(android::CameraParameters::KEY_ISO_MODE, "1600");
     }
 
+
+ const char *pict = params.get(android::CameraParameters::KEY_SUPPORTED_PICTURE_SIZES);
+    if (pict &&  strstr(pict, "1392x1392"))
+	params.set(android::CameraParameters::KEY_SUPPORTED_PREVIEW_SIZES,
+              "1280x960,1280x720,1056x864,960x720,720x480,640x480,352x288,320x240,176x144");
+
     android::String8 strParams = params.flatten();
 
     if (fixed_set_params[id])
@@ -201,7 +212,7 @@ static char *camera_fixup_setparams(struct camera_device *device, const char *se
     char *ret = fixed_set_params[id];
 
 #if !LOG_NDEBUG
-    ALOGV("%s: fixed parameters:", __FUNCTION__);
+    ALOGE("%s: fixed parameters:", __FUNCTION__);
     params.dump();
 #endif
 

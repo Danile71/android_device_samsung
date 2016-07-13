@@ -25,19 +25,6 @@
 
 #include <linux/types.h>
 
-#include <linux/ioctl.h>
-//#include <linux/time.h>
-#include <asm/byteorder.h>
-
-#ifdef  __LITTLE_ENDIAN
-#define SNDRV_LITTLE_ENDIAN
-#else
-#ifdef __BIG_ENDIAN
-#define SNDRV_BIG_ENDIAN
-#else
-#error "Unsupported endian..."
-#endif
-#endif
 
 /*
  *  protocol version
@@ -106,9 +93,10 @@ enum {
 	SNDRV_HWDEP_IFACE_SB_RC,	/* SB Extigy/Audigy2NX remote control */
 	SNDRV_HWDEP_IFACE_HDA,		/* HD-audio */
 	SNDRV_HWDEP_IFACE_USB_STREAM,	/* direct access to usb stream */
+	SNDRV_HWDEP_IFACE_AUDIO_BE,	/* Backend Audio Control */
+	SNDRV_HWDEP_IFACE_AUDIO_CODEC,	/* codec Audio Control */
 
-	/* Don't forget to change the following: */
-	SNDRV_HWDEP_IFACE_LAST = SNDRV_HWDEP_IFACE_USB_STREAM
+	/* Don't forget to change the following: */REAM
 };
 
 struct snd_hwdep_info {

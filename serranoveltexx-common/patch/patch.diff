@@ -1,0 +1,224 @@
+diff -ur a/packages/services/Telecomm/src/com/android/server/telecom/CallAudioManager.java b/packages/services/Telecomm/src/com/android/server/telecom/CallAudioManager.java
+--- a/packages/services/Telecomm/src/com/android/server/telecom/CallAudioManager.java	Wed Apr 20 08:50:20 2016
++++ b/packages/services/Telecomm/src/com/android/server/telecom/CallAudioManager.java	Thu May 12 01:31:40 2016
+@@ -481,8 +481,18 @@
+ 
+         Call call = CallsManager.getInstance().getForegroundCall();
+         boolean setMsimAudioParams = SystemProperties.getBoolean("ro.multisim.set_audio_params", false);
++		boolean setSamsungRealcallParams = SystemProperties.getBoolean("ro.telephony.samsung.realcall", false);
+ 
+         Log.v(this, "Request to change audio mode from %d to %d", oldMode, newMode);
++		
++		if(setSamsungRealcallParams) {
++            if(newMode == 0) {
++                mAudioManager.setParameters("realcall=off");
++            } else if(newMode == AudioManager.MODE_IN_COMMUNICATION || newMode == AudioManager.MODE_RINGTONE
++                || newMode == AudioManager.MODE_IN_CALL) {
++                    mAudioManager.setParameters("realcall=on");
++            }
++        }
+ 
+         if (oldMode != newMode) {
+             if (oldMode == AudioManager.MODE_IN_CALL && newMode == AudioManager.MODE_RINGTONE) {
+
+diff -ur a/frameworks/base/telephony/java/android/telephony/TelephonyManager.java b/frameworks/base/telephony/java/android/telephony/TelephonyManager.java
+--- a/frameworks/base/telephony/java/android/telephony/TelephonyManager.java	2016-02-23 18:40:29.000000000 +0000
++++ b/frameworks/base/telephony/java/android/telephony/TelephonyManager.java	2016-02-23 19:17:09.000000000 +0000
+@@ -3017,49 +3017,22 @@
+      * @hide
+      */
+     public static void setTelephonyProperty(int phoneId, String property, String value) {
+-        String propVal = "";
+-        String p[] = null;
+-        String prop = SystemProperties.get(property);
+-
+-        if (value == null) {
+-            value = "";
+-        }
+-
+-        if (prop != null) {
+-            p = prop.split(",");
+-        }
++        
+ 
+         if (!SubscriptionManager.isValidPhoneId(phoneId)) {
+             Rlog.d(TAG, "setTelephonyProperty: invalid phoneId=" + phoneId +
+-                    " property=" + property + " value: " + value + " prop=" + prop);
++                    " property=" + property + " value: " + value);
+             return;
+         }
+ 
+-        for (int i = 0; i < phoneId; i++) {
+-            String str = "";
+-            if ((p != null) && (i < p.length)) {
+-                str = p[i];
+-            }
+-            propVal = propVal + str + ",";
+-        }
+-
+-        propVal = propVal + value;
+-        if (p != null) {
+-            for (int i = phoneId + 1; i < p.length; i++) {
+-                propVal = propVal + "," + p[i];
+-            }
+-        }
+-
+-        if (property.length() > SystemProperties.PROP_NAME_MAX
+-                || propVal.length() > SystemProperties.PROP_VALUE_MAX) {
+-            Rlog.d(TAG, "setTelephonyProperty: property to long phoneId=" + phoneId +
+-                    " property=" + property + " value: " + value + " propVal=" + propVal);
+-            return;
++       
++        if (phoneId > 0) {
++            property += "_" + phoneId;
+         }
+ 
+         Rlog.d(TAG, "setTelephonyProperty: success phoneId=" + phoneId +
+-                " property=" + property + " value: " + value + " propVal=" + propVal);
+-        SystemProperties.set(property, propVal);
++                " property=" + property + " value: " + value);
++        SystemProperties.set(property, value);
+     }
+ 
+     /**
+@@ -3156,17 +3129,22 @@
+      * @hide
+      */
+     public static String getTelephonyProperty(int phoneId, String property, String defaultVal) {
+-        String propVal = null;
+-        String prop = SystemProperties.get(property);
+-        if ((prop != null) && (prop.length() > 0)) {
+-            String values[] = prop.split(",");
+-            if ((phoneId >= 0) && (phoneId < values.length) && (values[phoneId] != null)) {
+-                propVal = values[phoneId];
+-            }
++        if (!SubscriptionManager.isValidPhoneId(phoneId)) {
++            Rlog.d(TAG, "getTelephonyProperty: invalid phoneId=" + phoneId +
++                    " property=" + property);
++            return defaultVal;
++        }
++
++        if (phoneId > 0) {
++            property += "_" + phoneId;
+         }
++		
++		String propVal = SystemProperties.get(property);
++		
+         Rlog.d(TAG, "getTelephonyProperty: return propVal='" + propVal + "' phoneId=" + phoneId
+-                + " property='" + property + "' defaultVal='" + defaultVal + "' prop=" + prop);
+-        return propVal == null ? defaultVal : propVal;
++                + " property='" + property + "' defaultVal='" + defaultVal);
++
++        return propVal.isEmpty() ? defaultVal : propVal;
+     }
+ 
+     /**
+
+diff -ur a/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadio.java b/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadio.java
+--- a/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadio.java	Mon Jun 20 17:28:46 2016
++++ b/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadio.java	Mon Jun 27 10:41:05 2016
+@@ -193,6 +193,7 @@
+ 
+    private IFMRadioService mService = null;
+    private FmSharedPreferences mPrefs;
++   private AudioManager mAudioManager;
+ 
+    /* Button Resources */
+    private ImageView mOnOffButton;
+@@ -285,6 +286,7 @@
+    public void onCreate(Bundle savedInstanceState) {
+       super.onCreate(savedInstanceState);
+       setVolumeControlStream(AudioManager.STREAM_MUSIC);
++	  mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+       mPrefs = new FmSharedPreferences(this);
+       mCommandActive = CMD_NONE;
+       mCommandFailed = CMD_NONE;
+@@ -1664,6 +1666,9 @@
+             }
+ 
+             if((false == mService.isFmOn()) && isAntennaAvailable()) {
++				mAudioManager.setParameters("fm_mode=on;fm_radio_mute=0;fm_radio_volume=on;FMRadioVol=0.1496235728");
++                //mAudioManager.setMode(AudioManager.MODE_IN_CALL);
++                //mAudioManager.setSpeakerphoneOn(false);
+                 bStatus = mService.fmOn();
+                 if(bStatus) {
+                    tuneRadio(FmSharedPreferences.getTunedFrequency());
+@@ -1702,6 +1707,7 @@
+             }
+             bStatus = mService.fmOff();
+             enableRadioOnOffUI();
++			mAudioManager.setParameters("fm_mode=off;fm_radio_mute=1");
+             if (bStatus == false) {
+                 mCommandFailed = CMD_FMOFF;
+                 Log.e(LOGTAG, " mService.fmOff failed");
+
+diff -ur a/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadioService.java b/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadioService.java
+--- a/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadioService.java	Mon Jun 20 17:28:46 2016
++++ b/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadioService.java	Mon Jun 27 10:45:01 2016
+@@ -2087,6 +2087,7 @@
+    public void enableSpeaker(boolean speakerOn) {
+        if(isCallActive())
+            return ;
++	   AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        mSpeakerPhoneOn = speakerOn;
+        boolean analogmode = isAnalogModeSupported();
+        if (false == speakerOn) {
+@@ -2095,6 +2096,8 @@
+                     stopRecording();
+                 stopFM();
+                AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
++			   //audioManager.setMode(AudioManager.MODE_IN_CALL);
++               //audioManager.setSpeakerphoneOn(false);
+                if (mMuted) {
+                    setAudioPath(true);
+                } else {
+@@ -2130,6 +2133,8 @@
+                      unMute();
+                  }
+            }
++		   //audioManager.setMode(AudioManager.MODE_IN_CALL);
++          // audioManager.setSpeakerphoneOn(true);
+            AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_SPEAKER);
+            if (analogmode)
+                 startFM();
+@@ -2232,6 +2237,7 @@
+       {
+          mMuted = true;
+          audioManager.setStreamMute(AudioManager.STREAM_MUSIC,true);
++		 audioManager.setParameters("fm_radio_mute=1");
+       }
+       return bCommandSent;
+    }
+@@ -2252,6 +2258,7 @@
+       {
+          mMuted = false;
+          audioManager.setStreamMute(AudioManager.STREAM_MUSIC,false);
++		 audioManager.setParameters("fm_radio_mute=0");
+          if (mResumeAfterCall)
+          {
+              //We are unmuting FM in a voice call. Need to enable FM audio routing.
+			  
+diff -ur a/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadioService.java b/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadioService.java
+--- a/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadioService.java	Mon Jun 20 17:28:46 2016
++++ b/hardware/qcom/fm/fmapp2/src/com/caf/fmradio/FMRadioService.java	Mon Jun 27 10:45:01 2016			  
+@@ -922,14 +922,14 @@
+            //reason for resending the Speaker option is we are sending
+            //ACTION_FM=1 to AudioManager, the previous state of Speaker we set
+            //need not be retained by the Audio Manager.
+-           if (isSpeakerEnabled()) {
+-               mSpeakerPhoneOn = true;
+-               Log.d(LOGTAG, "Audio source set it as speaker");
+-               AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_SPEAKER);
+-           } else {
++           //if (isSpeakerEnabled()) {
++           //    mSpeakerPhoneOn = true;
++           //    Log.d(LOGTAG, "Audio source set it as speaker");
++           //    AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_SPEAKER);
++           //} else {
+                Log.d(LOGTAG, "Audio source set it as headset");
+                AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
+-           }
++           //}
+            AudioSystem.setDeviceConnectionState(AudioSystem.DEVICE_OUT_FM,
+                                AudioSystem.DEVICE_STATE_AVAILABLE, "");
+ 

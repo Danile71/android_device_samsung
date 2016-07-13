@@ -821,10 +821,13 @@ on boot
            chmod 600 /sys/bus/iio/devices/iio:device8/scan_elements/in_timestamp_index
            chmod 600 /sys/bus/iio/devices/iio:device8/scan_elements/in_timestamp_type
            chmod 600 /sys/bus/iio/devices/iio:device8/trigger/current_trigger
+chmod 0777 /sys/class/sec/sec_ir/ir_send
+chown system system /sys/class/sec/sec_ir/ir_send
+
 
 on fs
 # fm_radio
-    chmod 0640 /dev/radio0
+    chmod 0777 /dev/radio0
     chown system system /dev/radio0	
 	
 # msm specific files that need to be created on /data

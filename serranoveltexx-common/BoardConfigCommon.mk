@@ -106,7 +106,6 @@ BOARD_CHARGING_CMDLINE_NAME          := "androidboot.bootchg"
 BOARD_CHARGING_CMDLINE_VALUE         := "true"
 
 # Enable QCOM FM feature
-TARGET_QCOM_NO_FM_FIRMWARE           := true
 AUDIO_FEATURE_ENABLED_FM             := true
 
 # Enable HW based full disk encryption
@@ -176,7 +175,6 @@ endif
 # SELinux
 include device/qcom/sepolicy/sepolicy.mk
 
-#PRODUCT_VENDOR_KERNEL_HEADERS :=  device/samsung/serranoveltexx-common//kernel-headers
 TARGET_SPECIFIC_HEADER_PATH :=  device/samsung/serranoveltexx-common/include
 
 

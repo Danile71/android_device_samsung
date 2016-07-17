@@ -287,6 +287,19 @@ static int camera_start_preview(struct camera_device *device)
             (uintptr_t)(((wrapper_camera_device_t*)device)->vendor));
 
 
+    char *settings = VENDOR_CALL(device, get_parameters);
+    android::CameraParameters params;
+    params.unflatten(android::String8(settings));
+    params.getPreviewSize(&video_width, &video_height);
+    if(video_width>720 && video_height>540)
+    params.setPreviewSize(720,540);
+    android::String8 strParams = params.flatten();
+    VENDOR_CALL(device, set_parameters, strParams);
+    ALOGE("DANIIL %s\n",params.get("preview-size"));
+
+
+
+
 
     if (!device)
         return -EINVAL;

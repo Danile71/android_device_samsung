@@ -821,9 +821,21 @@ on boot
            chmod 600 /sys/bus/iio/devices/iio:device8/scan_elements/in_timestamp_index
            chmod 600 /sys/bus/iio/devices/iio:device8/scan_elements/in_timestamp_type
            chmod 600 /sys/bus/iio/devices/iio:device8/trigger/current_trigger
-chmod 0777 /sys/class/sec/sec_ir/ir_send
-chown system system /sys/class/sec/sec_ir/ir_send
+	chmod 0777 /sys/class/sec/sec_ir/ir_send
+	chown system system /sys/class/sec/sec_ir/ir_send
 
+
+# Set cpufreq
+        write  /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor smartassV2
+	write  /sys/devices/system/cpu/cpufreq/smartassV2/awake_ideal_freq "800000"
+	write  /sys/devices/system/cpu/cpufreq/smartassV2/sleep_ideal_freq "200000"
+	write  /sys/devices/system/cpu/cpufreq/smartassV2/sleep_wakeup_freq "800000"
+	write  /sys/devices/system/cpu/cpufreq/smartassV2/max_cpu_load "85"
+	write  /sys/devices/system/cpu/cpufreq/smartassV2/min_cpu_load "60"
+	write  /sys/devices/system/cpu/cpufreq/smartassV2/ramp_up_step "200000"
+	write  /sys/devices/system/cpu/cpufreq/smartassV2/ramp_down_step "200000"
+	write  /sys/devices/system/cpu/cpufreq/smartassV2/up_rate_us "48000"
+	write  /sys/devices/system/cpu/cpufreq/smartassV2/down_rate_us  "49000"
 
 on fs
 # fm_radio
@@ -1418,7 +1430,7 @@ service wifi-crda /system/bin/sh /system/etc/init.crda.sh
    disabled
    oneshot
 
-service mpdecision /system/bin/mpdecision --avg_comp
+service mpdecision /system/bin/cpucontrol
    user root
    disabled
 

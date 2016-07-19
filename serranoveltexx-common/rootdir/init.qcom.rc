@@ -837,6 +837,11 @@ on boot
 	write  /sys/devices/system/cpu/cpufreq/smartassV2/up_rate_us "48000"
 	write  /sys/devices/system/cpu/cpufreq/smartassV2/down_rate_us  "49000"
 
+
+#NFC
+	chmod 0777 /dev/pn547
+	chown system system /dev/pn547
+
 on fs
 # fm_radio
     chmod 0777 /dev/radio0

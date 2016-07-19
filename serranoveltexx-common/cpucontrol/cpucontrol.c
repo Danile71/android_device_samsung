@@ -1,5 +1,5 @@
-/* bson.c */
-
+/* cpucontrol.c */
+/* by Danil_e71*/
 /*    Copyright 2009, 2010 10gen Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+
 
 static void millisleep(unsigned long millisec) {
    struct timespec req = {
@@ -64,13 +65,14 @@ close(fd);
 
 int cpu[4];
 int timeout;
-
+int min_cpu;
+int i;
+char file[128];
 
 
 void get_online()
 {
-char file[128];
-int i=0;
+
 for(i=0;i<4;i++)
 {
 sprintf(file,"/sys/devices/system/cpu/cpu%d/online",i);
@@ -81,12 +83,8 @@ cpu[i]=atoi(read_f(file));
 
 void disable()
 {
-char file[128];
-int i=0;
-int n;
-if(atoi(read_f(CPU_FILE))<=200000)n=0;
-else n=1;
-for(i=3;i>n;i--)
+
+for(i=3;i>min_cpu;i--)
 {
 if(cpu[i]==1)
 {
@@ -101,8 +99,6 @@ break;
 
 void enable()
 {
-char file[128];
-int i=0;
 for(i=1;i<4;i++)
 {
 if(cpu[i]==0)
@@ -123,12 +119,23 @@ timeout=300;
 while(1)
 {
 mode=read_f(STATUS_FILE);
-if(mode[0]=='s')timeout=500;
-if(mode[0]=='a')timeout=300;
+
+if(mode[0]=='s')
+{
+timeout=500;
+min_cpu=0;
+}
+if(mode[0]=='a')
+{
+timeout=300;
+min_cpu=1;
+}
+
+
 get_online();
-if(atoi(read_f(CPU_FILE))<=400000)
+if(atoi(read_f(CPU_FILE))<=540000)
 disable();
-else
+else if(atoi(read_f(CPU_FILE))>800000)
 enable();
 millisleep(timeout);
 }

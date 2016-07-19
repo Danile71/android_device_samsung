@@ -177,7 +177,9 @@ include device/qcom/sepolicy/sepolicy.mk
 
 TARGET_SPECIFIC_HEADER_PATH :=  device/samsung/serranoveltexx-common/include
 
-
+BOARD_NFC_CHIPSET := pn547
+BOARD_NFC_LPM_LOSES_CONFIG := true
+BOARD_NFC_DEVICE := "/dev/pn547"
 
 BOARD_SEPOLICY_DIRS += \
    device/samsung/serranoveltexx-common/sepolicy

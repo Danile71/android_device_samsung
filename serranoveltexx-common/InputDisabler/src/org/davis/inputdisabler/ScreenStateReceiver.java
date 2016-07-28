@@ -24,7 +24,7 @@ public class ScreenStateReceiver extends BroadcastReceiver implements SensorEven
 
     public static final String TAG = "ScreenStateReceiver";
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     SensorManager mSensorManager;
 
@@ -33,36 +33,31 @@ public class ScreenStateReceiver extends BroadcastReceiver implements SensorEven
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if(DEBUG){
-            Log.d(TAG, "Received intent");
-        }
+        if(DEBUG)Log.d(TAG, "Received intent");
         
         switch (intent.getAction()) {
             case Intent.ACTION_SCREEN_ON:
-                Log.d(TAG, "Screen on!");
+                if(DEBUG)Log.d(TAG, "Screen on!");
                 enableDevices(true);
                 break;
             case Intent.ACTION_SCREEN_OFF:
-                Log.d(TAG, "Screen off!");
+                if(DEBUG)Log.d(TAG, "Screen off!");
                 enableDevices(false);
                 break;
             case TelephonyManager.ACTION_PHONE_STATE_CHANGED:
-                Log.d(TAG, "Phone state changed!");
-            
+                if(DEBUG)Log.d(TAG, "Phone state changed!");
                 final TelephonyManager telephonyManager =
                         (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            
                 switch (telephonyManager.getCallState()) {
                     case TelephonyManager.CALL_STATE_OFFHOOK:
                         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
                         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
                         mSensorManager.registerListener(this, mSensor, 3);
-                        break;
-                    case TelephonyManager.CALL_STATE_IDLE:
-                        if(mSensorManager != null) {
-                            mSensorManager.unregisterListener(this);
-                        }
                     break;
+                    case TelephonyManager.CALL_STATE_IDLE:
+			enableDevices(true);			
+                        if(mSensorManager != null)mSensorManager.unregisterListener(this);
+		    break;
                 }
             break;
         }
@@ -71,14 +66,10 @@ public class ScreenStateReceiver extends BroadcastReceiver implements SensorEven
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if(sensorEvent.values[0] == 0.0f) {
-            if(DEBUG){
-                Log.d(TAG, "Proximity: screen off");
-            }
+            if(DEBUG) Log.d(TAG, "Proximity: screen off");
             enableDevices(false);
         } else {
-            if(DEBUG){
-                Log.d(TAG, "Proximity: screen on");
-            }
+            if(DEBUG)Log.d(TAG, "Proximity: screen on");
             enableDevices(true);
         }
     }
@@ -90,15 +81,13 @@ public class ScreenStateReceiver extends BroadcastReceiver implements SensorEven
         if(enable) {
             // Turn on touch input
             ret = write_sysfs(Constants.TS_PATH, true);
-            if(DEBUG){
-               Log.d(TAG, "Enabled touchscreen, success? " + ret);
-            }   
+	    ret = write_sysfs(Constants.TK_PATH, true);
+            if(DEBUG)Log.d(TAG, "Enabled touchscreen, success? " + ret);   
         } else {
             // Turn off touch input
             ret = write_sysfs(Constants.TS_PATH, false);
-            if(DEBUG){
-                Log.d(TAG, "Disabled touchscreen, success? " + ret);
-            }   
+	    ret = write_sysfs(Constants.TK_PATH, false);
+            if(DEBUG)Log.d(TAG, "Disabled touchscreen, success? " + ret);
         }
     }
 

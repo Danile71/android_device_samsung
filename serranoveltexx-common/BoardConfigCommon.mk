@@ -72,7 +72,7 @@ TARGET_USES_WCNSS_CTRL           := true
 WPA_SUPPLICANT_VERSION           := VER_0_8_X
 WIFI_DRIVER_FW_PATH_STA          := "sta"
 WIFI_DRIVER_FW_PATH_AP           := "ap"
-WIFI_DRIVER_MODULE_PATH          := "/system/lib/modules/pronto/pronto_wlan.ko"
+WIFI_DRIVER_MODULE_PATH          := "/system/lib/modules/wlan.ko"
 WIFI_DRIVER_MODULE_NAME          := "wlan"
 
 
@@ -94,16 +94,21 @@ EXTENDED_FONT_FOOTPRINT             := true
 MALLOC_IMPL                         := dlmalloc
 
 # Audio
-#TARGET_QCOM_AUDIO_VARIANT                    := caf
+TARGET_QCOM_AUDIO_VARIANT                    := caf
 BOARD_USES_ALSA_AUDIO                         := true
 AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS    := true
 
 # Charger
+BOARD_CHARGER_DISABLE_INIT_BLANK	     := true
 BOARD_CHARGER_SHOW_PERCENTAGE        := true
 BOARD_CHARGER_ENABLE_SUSPEND         := true
-BOARD_BATTERY_DEVICE_NAME            := "battery"
-BOARD_CHARGING_CMDLINE_NAME          := "androidboot.bootchg"
-BOARD_CHARGING_CMDLINE_VALUE         := "true"
+BOARD_CHARGING_MODE_BOOTING_LPM      := /sys/class/power_supply/battery/batt_lp_charging
+#BOARD_BATTERY_DEVICE_NAME            := "battery"
+#BOARD_CHARGING_CMDLINE_NAME          := "androidboot.bootchg"
+#BOARD_CHARGING_CMDLINE_VALUE         := "true"
+
+
+
 
 # Enable QCOM FM feature
 AUDIO_FEATURE_ENABLED_FM             := true
@@ -113,6 +118,9 @@ TARGET_HW_DISK_ENCRYPTION            := true
 
 # Build our own PowerHAL
 TARGET_POWERHAL_VARIANT              := qcom
+CM_POWERHAL_EXTENSION                := qcom
+
+TARGET_QCOM_MEDIA_VARIANT           := caf
 
 # Vold
 TARGET_USE_CUSTOM_LUN_FILE_PATH      := /sys/devices/platform/msm_hsusb/gadget/lun%d/file
@@ -138,7 +146,11 @@ NUM_FRAMEBUFFER_SURFACE_BUFFERS     := 3
 MAX_EGL_CACHE_KEY_SIZE              := 12*1024
 MAX_EGL_CACHE_SIZE                  := 2048*1024
 #OVERRIDE_RS_DRIVER                 := libRSDriver_adreno.so
-AUDIO_FEATURE_ENABLED_FM             := true
+TARGET_RECOVERY_QCOM_RTC_FIX := true
+
+RECOVERY_GRAPHICS_USE_LINELENGTH := true
+TARGET_RECOVERY_PIXEL_FORMAT := "RGB_565"
+
 
 
 # Boot animation
@@ -156,6 +168,11 @@ BOARD_RECOVERY_SWIPE 				:= true
 BOARD_USE_CUSTOM_RECOVERY_FONT 	        	:= \"roboto_23x41.h\"
 BOARD_USES_MMCUTILS 				:= true
 #RECOVERY_VARIANT				:= cm
+BOARD_RECOVERY_NEEDS_FBIOPAN_DISPLAY:=true
+RECOVERY_GRAPHICS_USE_LINELENGTH := true
+TARGET_RECOVERY_DEVICE_DIRS += device/samsung/qcom-common
+BOARD_HAS_DOWNLOAD_MODE := true
+COMMON_GLOBAL_CFLAGS += -DNO_SECURE_DISCARD
 	
 # Misc.
 TARGET_SYSTEM_PROP                              := $(LOCAL_PATH)/system.prop

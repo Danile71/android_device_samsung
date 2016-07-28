@@ -15,7 +15,8 @@ ril.subscription.types=NV,RUIM
 DEVICE_PROVISIONED=1
 ro.telephony.ril_class=SamsungQcom3GDSRIL
 ro.telephony.samsung.realcall=true
-
+debug.sf.hw=1
+debug.egl.hw=1
 
 # Data modules (For evolution RIL model)
 ro.use_data_netmgrd=false
@@ -24,6 +25,7 @@ ro.telephony.default_network=0
 telephony.lteOnGsmDevice=0
 persist.radio.apm_sim_not_pwdn=1
 ro.min_freq=200000
+ro.mot.phonemode.vzwglobalphone=0
 
 
 
@@ -31,6 +33,12 @@ ro.min_freq=200000
 persist.radio.multisim.config=none
 ro.multisim.simslotcount=1
 persist.radio.add_power_save=1
+ro.ril.svlte1x=false
+ro.config.combined_signal=true
+ro.ril.svdo=true
+persist.sys.llmmode=true
+
+
 
 # Display
 ro.sf.lcd_density=240
@@ -39,7 +47,16 @@ debug.sf.gpu_comp_tiling=1
 debug.mdpcomp.idletime=600
 persist.hwc.mdpcomp.enable=true
 persist.hwc.ptor.enable=true
-ro.opengles.version=196609
+ro.opengles.version=196608
+
+ro.config.max_starting_bg=8
+ro.dalvik.vm.native.bridge=0
+ro.config.low_ram=false
+ro.input.noresample=1
+ro.bq.gpu_to_cpu_unsupported=1
+persist.gralloc.cp.level3=1
+persist.hwc.enable_vds=1
+
 
 # Perf
 ro.vendor.extension_library=libqti-perfd-client.so

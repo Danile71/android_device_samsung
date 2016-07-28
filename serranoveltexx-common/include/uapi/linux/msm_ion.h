@@ -1,18 +1,7 @@
 #ifndef _UAPI_MSM_ION_H
 #define _UAPI_MSM_ION_H
 
-#include "ion.h"
 
-enum msm_ion_heap_types {
-	ION_HEAP_TYPE_MSM_START = ION_HEAP_TYPE_CUSTOM + 1,
-	ION_HEAP_TYPE_DMA = ION_HEAP_TYPE_MSM_START,
-	ION_HEAP_TYPE_SECURE_DMA,
-	ION_HEAP_TYPE_REMOVED,
-	/*
-	 * if you add a heap type here you should also add it to
-	 * heap_types_info[] in msm_ion.c
-	 */
-};
 
 /**
  * These are the only ids that should be used for Ion heap ids.

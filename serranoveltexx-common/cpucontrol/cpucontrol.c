@@ -27,6 +27,9 @@
 #include <errno.h>
 
 
+
+
+
 static void millisleep(unsigned long millisec) {
    struct timespec req = {
       .tv_sec = 0,
@@ -50,10 +53,11 @@ return size;
 } 
 void write_f(char *f,char *data)
 {
-int fd, ret;
+int fd;
 fd = open(f,  O_RDWR);
-if (fd < 0)return;
-ret = write(fd, data, sizeof(data));
+
+if (fd >=0)
+write(fd, data, strlen(data));
 close(fd);
 } 
 
@@ -67,8 +71,27 @@ int cpu[4];
 int timeout;
 int min_cpu;
 int i;
+int current_freq;
+char *governor;
 char file[128];
 
+
+
+
+
+
+void set_kgsl(int max)
+{
+if(max)write_f("/sys/class/kgsl/kgsl-3d0/wake_timeout","100");
+else write_f("/sys/class/kgsl/kgsl-3d0/wake_timeout","500");
+}
+
+
+
+void set_min_freq(char *freq)
+{
+write_f("/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq",freq);
+}
 
 void get_online()
 {
@@ -78,6 +101,10 @@ for(i=0;i<4;i++)
 sprintf(file,"/sys/devices/system/cpu/cpu%d/online",i);
 cpu[i]=atoi(read_f(file));
 }
+current_freq=atoi(read_f(CPU_FILE));
+governor=read_f("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor");
+if(!strstr(governor,"smartassV2"))
+write_f("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor","smartassV2");
 }
 
 
@@ -116,27 +143,39 @@ int main()
 {
 char *mode;
 timeout=300;
+min_cpu=1;
+set_min_freq("533333");
+
+
 while(1)
 {
 mode=read_f(STATUS_FILE);
 
-if(mode[0]=='s')
+if(mode[0]=='s' && timeout == 300)
 {
+set_min_freq("200000");
 timeout=500;
 min_cpu=0;
+set_kgsl(0);
 }
-if(mode[0]=='a')
+else
+if(mode[0]=='a' &&  timeout == 500)
 {
+set_min_freq("533333");
 timeout=300;
 min_cpu=1;
+set_kgsl(1);
 }
+
 
 
 get_online();
-if(atoi(read_f(CPU_FILE))<=540000)
+
+if(current_freq<=540000)
 disable();
-else if(atoi(read_f(CPU_FILE))>800000)
+else if(current_freq>800000)
 enable();
+
 millisleep(timeout);
 }
 

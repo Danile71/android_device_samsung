@@ -624,18 +624,18 @@
     <!-- Play Scenario  -->
     <path name="handset">
         <path name="rcv" />
-        <ctl name="RX1 Digital Volume" value="90" />
+        <ctl name="RX1 Digital Volume" value="84" />
     </path>
 
     <path name="speaker">
         <path name="spk" />
-        <ctl name="RX3 Digital Volume" value="90" />
+        <ctl name="RX3 Digital Volume" value="84" />
     </path>
 
     <path name="headset">
         <path name="ear" />
-        <ctl name="RX1 Digital Volume" value="90" />
-        <ctl name="RX2 Digital Volume" value="90" />
+        <ctl name="RX1 Digital Volume" value="84" />
+        <ctl name="RX2 Digital Volume" value="84" />
     </path>
 
     <path name="dock">
@@ -680,13 +680,13 @@
 
     <path name="fm-speaker">
         <path name="spk" />
-        <ctl name="RX3 Digital Volume" value="76" />
+        <ctl name="RX3 Digital Volume" value="90" />
     </path>	
 
     <path name="fm-headset">
         <path name="ear" />
-        <ctl name="RX1 Digital Volume" value="84" />
-        <ctl name="RX2 Digital Volume" value="84" />
+        <ctl name="RX1 Digital Volume" value="90" />
+        <ctl name="RX2 Digital Volume" value="90" />
         <ctl name="EAR PA Gain" value="POS_1P5_DB" />
     </path>
 
@@ -854,7 +854,7 @@
     <!-- RX part -->
     <path name="voice-call-handset">
         <path name="rcv" />
-        <ctl name="RX1 Digital Volume" value="90" />
+        <ctl name="RX1 Digital Volume" value="84" />
     </path>
 
     <path name="voice-call-handset-extra-vol">

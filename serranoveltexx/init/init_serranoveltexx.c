@@ -56,8 +56,8 @@ void init_msm_properties(unsigned long msm_id, unsigned long msm_ver, char *boar
 
     if (strstr(bootloader, "I9195")) {
         /* SM-G530H */
-        property_set("ro.build.fingerprint", "samsung/serranoveltexx/serranoveltexx:5.0.2/LRX22G/I9195IXCU1BPB1:user/release-keys");
-        property_set("ro.build.description", "serranoveltexx-user 5.0.2 LRX22G I9195IXCU1BPB1 release-keys");
+        property_set("ro.build.fingerprint", "samsung/serranoveltexx/serranoveltexx:5.1.1/LRX22G/I9195IXCU1BPB1:user/release-keys");
+        property_set("ro.build.description", "serranoveltexx-user 5.1.1 LRX22G I9195IXCU1BPB1 release-keys");
         property_set("ro.product.model", "I9195I");
         property_set("ro.product.device", "serranoveltexx");
     }

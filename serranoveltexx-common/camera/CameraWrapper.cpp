@@ -142,7 +142,7 @@ static char *camera_fixup_getparams(int id, const char *settings)
         params.set(KEY_VIDEO_HFR_VALUES, tmp);
     }
 	params.set(android::CameraParameters::KEY_SUPPORTED_PREVIEW_SIZES,
-              "640x360,720x480,640x480,528x432,352x288,320x240,176x144");
+              "640x360,640x480,528x432,352x288,320x240,176x144");
 
     /* Enforce video-snapshot-supported to true */
     params.set(android::CameraParameters::KEY_VIDEO_SNAPSHOT_SUPPORTED, "true");
@@ -194,7 +194,7 @@ static char *camera_fixup_setparams(struct camera_device *device, const char *se
     }
 
 	params.set(android::CameraParameters::KEY_SUPPORTED_PREVIEW_SIZES,
-              "640x360,720x480,640x480,528x432,352x288,320x240,176x144");
+              "640x360,640x480,528x432,352x288,320x240,176x144");
 
     android::String8 strParams = params.flatten();
 

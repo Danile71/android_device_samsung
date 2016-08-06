@@ -72,7 +72,6 @@ int timeout;
 int min_cpu;
 int i;
 int current_freq;
-char *governor;
 char file[128];
 
 
@@ -102,8 +101,7 @@ sprintf(file,"/sys/devices/system/cpu/cpu%d/online",i);
 cpu[i]=atoi(read_f(file));
 }
 current_freq=atoi(read_f(CPU_FILE));
-governor=read_f("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor");
-if(!strstr(governor,"smartassV2"))
+if(!strstr(read_f("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"),"smartassV2"))
 write_f("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor","smartassV2");
 }
 
@@ -153,7 +151,7 @@ mode=read_f(STATUS_FILE);
 
 if(mode[0]=='s' && timeout == 300)
 {
-set_min_freq("200000");
+set_min_freq("400000");
 timeout=500;
 min_cpu=0;
 set_kgsl(0);
@@ -167,13 +165,11 @@ min_cpu=1;
 set_kgsl(1);
 }
 
-
-
 get_online();
 
-if(current_freq<=540000)
+if(current_freq<=533333)
 disable();
-else if(current_freq>800000)
+else if(current_freq>1000000)
 enable();
 
 millisleep(timeout);

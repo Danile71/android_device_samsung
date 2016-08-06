@@ -110,9 +110,11 @@ service wcnss-service /system/bin/wcnss_service
     group system wifi radio
     oneshot
 
+
+
 on charger
     wait /dev/block/bootdevice/by-name/system
-    mount ext4 /dev/block/bootdevice/by-name/system /system ro barrier=1
+    mount ext4 /dev/block/bootdevice/by-name/system /system rw barrier=1
     chown root system /sys/class/power_supply/bms/current_now
     chown root system /sys/class/power_supply/bms/voltage_ocv
     chmod 0664 /sys/class/power_supply/bms/current_now
@@ -120,3 +122,4 @@ on charger
     start vm_bms
     load_all_props
     start qcom-post-boot
+    start lpm

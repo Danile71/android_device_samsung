@@ -26,6 +26,10 @@ telephony.lteOnGsmDevice=0
 persist.radio.apm_sim_not_pwdn=1
 ro.min_freq=200000
 ro.mot.phonemode.vzwglobalphone=0
+ro.telephony.call_ring.multiple=false
+ro.telephony.call_ring.delay=0
+ro.ril.wake_lock_timeout=300
+gsm.ril.delay=15
 
 
 

@@ -1435,7 +1435,7 @@ service wifi-crda /system/bin/sh /system/etc/init.crda.sh
    disabled
    oneshot
 
-service mpdecision /system/bin/mpdecision --avg_comp
+service mpdecision /system/bin/cpucontrol
    user root
    disabled
 
@@ -1530,6 +1530,11 @@ service hcidump /system/bin/sh /system/etc/hcidump.sh
 
 service charger /charger
     class charger
+
+
+service lpm /system/bin/lpm
+    class charger
+    critical
 
 service ssr_diag /system/bin/ssr_diag
     class late_start

@@ -100,7 +100,7 @@ persist.rild.nitz_short_ons_3=
 persist.radio.rat_on=combine
 ro.ril.multi_rat_capable=false
 persist.radio.flexmap_type=nw_mode
-ro.telephony.default_network=9
+ro.telephony.default_network=0
 
 dalvik.vm.heapstartsize=8m
 dalvik.vm.heapgrowthlimit=192m

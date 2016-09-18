@@ -21,17 +21,24 @@
 #
 
 # Inherit from common fortuna-common
--include device/samsung/serranoveltexx-common/BoardConfigCommon.mk
+-include device/samsung/serranovexx-common/BoardConfigCommon.mk
+
+LOCAL_PATH := device/samsung/serranoveltexx
+SAMSUNG_TARGETS := serranoveltexx
 
 # Assert
-TARGET_OTA_ASSERT_DEVICE := serranoveltexx
+TARGET_OTA_ASSERT_DEVICE := samsung_sm_I9195I
+
+# Misc.
+TARGET_SYSTEM_PROP                              := device/samsung/serranoveltexx/system.prop
 
 # Kernel
 TARGET_KERNEL_CONFIG := msm8916_sec_defconfig
 TARGET_KERNEL_VARIANT_CONFIG := msm8916_sec_serranovelte_eur_defconfig
 
 
-# Init
-TARGET_INIT_VENDOR_LIB := libinit_msm
-TARGET_LIBINIT_DEFINES_FILE := device/samsung/serranoveltexx/init/init_serranoveltexx.c
-TARGET_UNIFIED_DEVICE := true
+# Vendor Init
+TARGET_UNIFIED_DEVICE                := true
+TARGET_INIT_VENDOR_LIB               := libinit_serranoveltexx
+TARGET_RECOVERY_DEVICE_MODULES       := libinit_serranoveltexx
+

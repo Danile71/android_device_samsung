@@ -16,6 +16,7 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 # Inherit from fortunave3g device
 $(call inherit-product, $(LOCAL_PATH)/device.mk)
 
+
 # Set those variables here to overwrite the inherited values.
 PRODUCT_NAME := full_serranoveltexx
 PRODUCT_DEVICE := serranoveltexx

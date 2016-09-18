@@ -15,7 +15,6 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <!-- Gesture shortcuts -->
   <string name="screen_gestures_panel_title">సైగలు</string>
-  <string name="screen_gestures_panel_summary">చర్యలను నిర్వహించేందుకు సైగలను ఉపయోగించండి</string>
   <string name="ambient_display_title">యాంబియెంట్ డిస్‌ప్లే</string>
   <string name="ambient_display_enable_title">యాంబియెంట్ డిస్‌ప్లే</string>
   <string name="ambient_display_enable_summary">మీరు నోటిఫికేషన్లను అందుకున్నప్పుడు మేల్కొల్పు తెర</string>

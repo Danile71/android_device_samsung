@@ -956,6 +956,8 @@ struct snd_ctl_event {
 /*
  *  Control names
  */
+#define SND_AUDIOCODEC_ALAC                  ((__u32) 0x00000019)
+#define SND_AUDIOCODEC_APE                   ((__u32) 0x00000020)
 
 #define SNDRV_CTL_NAME_NONE				""
 #define SNDRV_CTL_NAME_PLAYBACK				"Playback "

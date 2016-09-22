@@ -41,7 +41,7 @@ BOARD_KERNEL_TAGS_OFFSET     := 0x01E00000
 BOARD_RAMDISK_OFFSET         := 0x02000000
 BOARD_KERNEL_PAGESIZE        := 2048
 BOARD_KERNEL_SEPARATED_DT    := true
-TARGET_KERNEL_SOURCE         := kernel/serranoveltexx_kernel
+TARGET_KERNEL_SOURCE         := kernel/samsung/serranovexx
 
 TARGET_KERNEL_SELINUX_CONFIG        := selinux_defconfig
 
@@ -135,26 +135,19 @@ BOARD_SUPPRESS_EMMC_WIPE 	     := true
 TARGET_PROVIDES_CAMERA_HAL           := true
 USE_DEVICE_SPECIFIC_CAMERA           := true
 
-# CMHW
-BOARD_HARDWARE_CLASS += $(LOCAL_PATH)/cmhw
-
 # Media
 TARGET_ENABLE_QC_AV_ENHANCEMENTS    := true
 
-
-
-
-
 # Display
-TARGET_CONTINUOUS_SPLASH_ENABLED      := true
-TARGET_USES_OVERLAY 		          := true
-TARGET_HARDWARE_3D		              := false
+TARGET_CONTINUOUS_SPLASH_ENABLED    := true
+TARGET_USES_OVERLAY 		    := true
+TARGET_HARDWARE_3D                  := false
 TARGET_HAVE_HDMI_OUT 		    := false
 USE_OPENGL_RENDERER                 := true
 NUM_FRAMEBUFFER_SURFACE_BUFFERS     := 3
 MAX_EGL_CACHE_KEY_SIZE              := 12*1024
 MAX_EGL_CACHE_SIZE                  := 2048*1024
-OVERRIDE_RS_DRIVER                 := libRSDriver_adreno.so
+OVERRIDE_RS_DRIVER                  := libRSDriver_adreno.so
 TARGET_RECOVERY_QCOM_RTC_FIX := true
 
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
@@ -176,7 +169,6 @@ BOARD_HAS_NO_SELECT_BUTTON 			:= true
 BOARD_RECOVERY_SWIPE 				:= true
 BOARD_USE_CUSTOM_RECOVERY_FONT 	        	:= \"roboto_23x41.h\"
 BOARD_USES_MMCUTILS 				:= true
-#RECOVERY_VARIANT				:= cm
 BOARD_RECOVERY_NEEDS_FBIOPAN_DISPLAY:=true
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
 TARGET_RECOVERY_DEVICE_DIRS += device/samsung/qcom-common
@@ -203,13 +195,9 @@ TARGET_SPECIFIC_HEADER_PATH :=  device/samsung/serranovexx-common/include
 BOARD_NFC_CHIPSET := pn547
 BOARD_NFC_LPM_LOSES_CONFIG := true
 BOARD_NFC_DEVICE := "/dev/pn547"
-TARGET_NO_AUDIOFX := true
 
 # SELinux
 include device/qcom/sepolicy/sepolicy.mk
 
 BOARD_SEPOLICY_DIRS += \
    device/samsung/serranovexx-common/sepolicy
-
-
-

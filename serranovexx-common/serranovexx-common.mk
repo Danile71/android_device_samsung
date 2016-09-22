@@ -115,10 +115,8 @@ PRODUCT_PACKAGES += \
     libnetcmdiface \
     macloader
 
-# cpu
 PRODUCT_PACKAGES += \
-	Galaxy+Universal+Remote+v4.0+Final \
-    cpucontrol
+	Galaxy+Universal+Remote+v4.0+Final
 
 # CRDA
 PRODUCT_PACKAGES += \
@@ -262,6 +260,7 @@ PRODUCT_PACKAGES += \
     libGLES_android \
     libGLESv1_CM \
     libGLESv2 \
+    Snap \
     libETC1 \
     egl.cfg \
     Stk \

@@ -48,7 +48,6 @@ on enable-low-power
 
     # enable governor
     write /sys/devices/system/cpu/cpu0/online 1
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 800000
     # enable thermal core_control now
     write /sys/module/msm_thermal/core_control/enabled 1
 
@@ -863,8 +862,10 @@ mkdir /dev/socket/mpdecision 2770 root system
 
 # Set cpufreq
         write  /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor smartassV2
+        write  /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq "1209600"
+        write  /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq "400000" 
 	write  /sys/devices/system/cpu/cpufreq/smartassV2/awake_ideal_freq "800000"
-	write  /sys/devices/system/cpu/cpufreq/smartassV2/sleep_ideal_freq "200000"
+	write  /sys/devices/system/cpu/cpufreq/smartassV2/sleep_ideal_freq "400000"
 	write  /sys/devices/system/cpu/cpufreq/smartassV2/sleep_wakeup_freq "800000"
 	write  /sys/devices/system/cpu/cpufreq/smartassV2/max_cpu_load "85"
 	write  /sys/devices/system/cpu/cpufreq/smartassV2/min_cpu_load "60"
@@ -877,6 +878,9 @@ mkdir /dev/socket/mpdecision 2770 root system
 #NFC
 	chmod 0777 /dev/pn547
 	chown system system /dev/pn547
+
+# Enable power-on alarm
+     write /sys/module/qpnp_rtc/parameters/poweron_alarm 1
 
 on fs
 # fm_radio
@@ -1354,8 +1358,10 @@ service wifi-crda /system/bin/sh /system/etc/init.crda.sh
    disabled
    oneshot
 
-service mpdecision /system/bin/cpucontrol
+service mpdecision /system/bin/mpdecision --avg_comp --decision_ms 1000
+   class main
    user root
+   group root
    disabled
 
 on property:sys.boot_completed=1

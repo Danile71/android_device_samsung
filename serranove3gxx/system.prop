@@ -1,3 +1,4 @@
+ro.product.device=serranove3gxx
 # RIL
 rild.libpath=/system/lib/libsec-ril.so
 rild.libpath2=/system/lib/libsec-ril-dsds.so
@@ -49,9 +50,15 @@ persist.audio.fluence.voicecall=true
 persist.audio.fluence.voicerec=false
 persist.audio.fluence.speaker=true
 tunnel.audio.encode = false
-audio.offload.buffer.size.kb=32
+# Audio offload
+audio.offload.buffer.size.kb=64
+audio.offload.gapless.enabled=true
 audio.offload.min.duration.secs=30
+audio.offload.pcm.16bit.enable=true
+audio.offload.pcm.24bit.enable=true
 audio.offload.video=true
+av.offload.enable=true
+av.streaming.offload.enable=false
 
 # Wi-Fi, Bluetooth
 wifi.interface=wlan0
@@ -85,7 +92,6 @@ vidc.enc.narrow.searchrange=1
 # Samsung OEM
 ro.multisim.set_audio_params=true
 ro.telephony.samsung.realcall=true
-ro.config.max_starting_bg=8
 
 persist.rild.nitz_plmn=
 persist.rild.nitz_long_ons_0=
@@ -100,7 +106,7 @@ persist.rild.nitz_short_ons_3=
 persist.radio.rat_on=combine
 ro.ril.multi_rat_capable=false
 persist.radio.flexmap_type=nw_mode
-ro.telephony.default_network=0
+ro.telephony.default_network=3
 
 dalvik.vm.heapstartsize=8m
 dalvik.vm.heapgrowthlimit=192m
@@ -130,5 +136,15 @@ sysprof.inputdispatcher.stale=500
 # DHA
 ro.config.dha_frag_enable=0
 persist.hwc.mdpcomp.enable=true
-
+# test
+ro.config.fha_enable=true
+ro.sys.fw.use_trim_settings=true
+ro.sys.fw.empty_app_percent=50
+ro.sys.fw.trim_empty_percent=100
+ro.sys.fw.trim_cache_percent=100
+ro.sys.fw.bservice_enable=true
+ro.sys.fw.bservice_limit=5
+ro.sys.fw.bservice_age=5000
+ro.sys.fw.trim_enable_memory=734003200
+ro.min_freq=400000
 

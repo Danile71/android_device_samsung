@@ -109,6 +109,8 @@ ___________________________________________________
   |____________________________________________________|
 -->
 <MediaCodecs>
+<Include href="media_codecs_google_audio.xml" />
+<Include href="media_codecs_ffmpeg.xml" />
     <Encoders>
         <!-- Audio Hardware  -->
         <MediaCodec name="OMX.qcom.audio.encoder.evrc" type="audio/evrc" >
@@ -164,11 +166,11 @@ ___________________________________________________
             <Limit name="blocks-per-second" min="1" max="244800" />
             <Limit name="bitrate" range="1-20000000" />
         </MediaCodec>
+        <MediaCodec name="OMX.google.flac.encoder" type="audio/flac" />
     </Encoders>
     <Decoders>
+    <MediaCodec name="OMX.ffmpeg.flac.decoder" type="audio/flac"/>	
         <!-- Audio Hardware  -->
-        <MediaCodec name="OMX.qcom.audio.decoder.amrwbplus" type="audio/amr-wb-plus" >
-        </MediaCodec>
         <!-- Audio Software  -->
         <!--
             Use Google's RAW decoder to support ACodec path for FLAC clips as

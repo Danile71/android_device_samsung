@@ -17,7 +17,7 @@ persist.data.netmgrd.qos.enable=false
 wifi.supplicant_scan_interval=180
 persist.radio.multisim.config=none
 ro.multisim.simslotcount=1
-
+persist.sys.isUsbOtgEnabled=true
 
 # Display
 ro.sf.lcd_density=240

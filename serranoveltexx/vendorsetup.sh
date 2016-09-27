@@ -19,4 +19,6 @@
 # In particular, you can add lunch options with the add_lunch_combo
 # function: add_lunch_combo generic-eng
 
-add_lunch_combo cm_serranoveltexx-userdebug
+for i in eng userdebug user; do
+	add_lunch_combo cm_serranoveltexx-${i}
+done

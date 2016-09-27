@@ -46,7 +46,7 @@ BOARD_KERNEL_TAGS_OFFSET     := 0x01E00000
 BOARD_RAMDISK_OFFSET         := 0x02000000
 BOARD_KERNEL_PAGESIZE        := 2048
 BOARD_KERNEL_SEPARATED_DT    := true
-TARGET_KERNEL_SOURCE         := kernel/samsung/serranovexx
+
 
 TARGET_KERNEL_SELINUX_CONFIG        := selinux_defconfig
 

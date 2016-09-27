@@ -33,6 +33,7 @@ TARGET_OTA_ASSERT_DEVICE := samsung_sm_I9195I
 TARGET_SYSTEM_PROP                              := device/samsung/serranoveltexx/system.prop
 
 # Kernel
+TARGET_KERNEL_SOURCE         := kernel/samsung/serranovexx
 TARGET_KERNEL_CONFIG := msm8916_sec_defconfig
 TARGET_KERNEL_VARIANT_CONFIG := msm8916_sec_serranovelte_eur_defconfig
 

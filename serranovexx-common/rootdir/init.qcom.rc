@@ -67,6 +67,15 @@ on enable-low-power
 
     # Enable low power modes
     write /sys/module/lpm_levels/parameters/sleep_disabled 0
+    write /sys/module/lpm_levels/system/cpu0/standalone_pc/suspend_enabled Y
+    write /sys/module/lpm_levels/system/cpu1/standalone_pc/suspend_enabled Y
+    write /sys/module/lpm_levels/system/cpu2/standalone_pc/suspend_enabled Y
+    write /sys/module/lpm_levels/system/cpu3/standalone_pc/suspend_enabled Y
+    write /sys/module/lpm_levels/system/cpu0/wfi/suspend_enabled Y
+    write /sys/module/lpm_levels/system/cpu1/wfi/suspend_enabled Y
+    write /sys/module/lpm_levels/system/cpu2/wfi/suspend_enabled Y
+    write /sys/module/lpm_levels/system/cpu3/wfi/suspend_enabled Y
+
 
 	# Update foreground and background cpusets
     write /dev/cpuset/foreground/cpus 0-3
@@ -86,8 +95,7 @@ on early-init
 on init
     export LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so:/system/lib/libcrypto.so|libboringssl-compat.so
 
-    #setprop ro.vold.primary_physical 1
-    setprop vold.debug.default_primary 1
+    setprop persist.fw.force_adoptable true
 
     # Set permissions for persist partition
     mkdir /persist 0771 system system
@@ -160,10 +168,6 @@ on boot
     write /sys/kernel/mm/ksm/pages_to_scan 100
     write /sys/kernel/mm/ksm/sleep_millisecs 500
     write /sys/kernel/mm/ksm/run 1	
-
-    chmod 0777 /dev/smdcntl9
-    chmod 0777 /dev/smdcntl10
-    chmod 0777 /dev/smdcntl11
 
     setprop wifi.interface wlan0
 
@@ -462,6 +466,9 @@ on boot
     chmod 0664 /sys/class/power_supply/ps/status
     chown system radio /sys/class/power_supply/battery/batt_temp_table
 mkdir /dev/socket/mpdecision 2770 root system
+swapon_all fstab.qcom
+    write /proc/sys/vm/page-cluster 0
+    write /proc/sys/vm/swappiness 100
 #lsm6ds3_accel    
     chown system system /dev/iio:device0
     chown system system /sys/bus/iio/devices/trigger0/name
@@ -877,6 +884,28 @@ mkdir /dev/socket/mpdecision 2770 root system
 #NFC
 	chmod 0777 /dev/pn547
 	chown system system /dev/pn547
+
+# Permissions for touch
+	chown system media_rw /sys/class/sec/tsp/cmd
+	chown system media_rw /sys/class/sec/tsp/cmd_list
+	chown system media_rw /sys/class/sec/tsp/cmd_result
+	chown system media_rw /sys/class/timed_output/vibrator/pwm_default
+	chown system media_rw /sys/class/timed_output/vibrator/pwm_value
+	chown system media_rw /sys/class/timed_output/vibrator/pwm_max
+	chown system media_rw /sys/class/timed_output/vibrator/pwm_min
+	chown system media_rw /sys/class/timed_output/vibrator/pwm_threshold
+	chmod 0777 /sys/class/sec/tsp/cmd
+	chmod 0777 /sys/class/sec/tsp/cmd_list
+	chmod 0777 /sys/class/sec/tsp/cmd_result
+	chmod 0777 /sys/class/mdnie/mdnie/mode
+	chmod 0777 /sys/class/lcd/panel/power_reduce
+	chmod 0777 /sys/class/mdnie/mdnie/outdoor
+	chmod 0777 /sys/class/timed_output/vibrator/pwm_default
+	chmod 0777 /sys/class/timed_output/vibrator/pwm_value
+	chmod 0777 /sys/class/timed_output/vibrator/pwm_max
+	chmod 0777 /sys/class/timed_output/vibrator/pwm_min
+	chmod 0777 /sys/class/timed_output/vibrator/pwm_threshold
+
 
 # Enable power-on alarm
      write /sys/module/qpnp_rtc/parameters/poweron_alarm 1

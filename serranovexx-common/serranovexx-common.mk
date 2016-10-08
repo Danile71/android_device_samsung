@@ -41,6 +41,8 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/permissions/android.hardware.touchscreen.xml:system/etc/permissions/android.hardware.touchscreen.xml \
     $(LOCAL_PATH)/configs/permissions/android.software.sip.xml:system/etc/permissions/android.software.sip.xml \
     $(LOCAL_PATH)/configs/permissions/com.qualcomm.location.xml:system/etc/permissions/com.qualcomm.location.xml \
+    $(LOCAL_PATH)/configs/permissions/com.nxp.mifare.xml:system/etc/permissions/com.nxp.mifare.xml \
+    $(LOCAL_PATH)/configs/permissions/com.google.widevine.software.drm.xml:system/etc/permissions/com.google.widevine.software.drm.xml \
     packages/wallpapers/LivePicker/android.software.live_wallpaper.xml:system/etc/permissions/android.software.live_wallpaper.xml
 	
 # Init files
@@ -142,8 +144,8 @@ PRODUCT_PACKAGES += \
     wpa_supplicant.conf
 	
 # Doze
-PRODUCT_PACKAGES += \
-    SamsungDoze
+#PRODUCT_PACKAGES += \
+#    SamsungDoze
 	
 
 
@@ -179,8 +181,8 @@ PRODUCT_PACKAGES += \
     liboverlay \
     libqdutils \
     libqservice \
+    libRSSupportIO \
     libtinyxml
-
 
 PRODUCT_PACKAGES += \
     libril_shim \
@@ -260,9 +262,11 @@ PRODUCT_PACKAGES += \
     libGLES_android \
     libGLESv1_CM \
     libGLESv2 \
+    FmmDS \
     Snap \
     libETC1 \
     egl.cfg \
+    AdvancedDisplay \
     Stk \
     Stk2
 	
@@ -280,6 +284,7 @@ ADDITIONAL_DEFAULT_PROPERTIES += \
 
 # We have enough storage space to hold precise GC data
 PRODUCT_AAPT_CONFIG := normal
+PRODUCT_AAPT_PREBUILT_DPI := xxxhdpi xxhdpi xhdpi hdpi ldpi mdpi hdpi nodpi
 PRODUCT_AAPT_PREF_CONFIG := xhdpi
 
 # Common qcom

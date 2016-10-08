@@ -1,6 +1,5 @@
 # inherit from qcom-common
 -include device/samsung/qcom-common/BoardConfigCommon.mk
-
 # Inherit from the proprietary version
 -include vendor/samsung/serranovexx-common/BoardConfigVendor.mk
 
@@ -22,7 +21,6 @@ ARCH_ARM_HAVE_TLS_REGISTER      := true
 TARGET_BOARD_SUFFIX             := _32
 TARGET_USES_NEW_ION_API         :=true
 
-
 # Qcom
 BOARD_USES_QC_TIME_SERVICES        := true
 TARGET_USES_QCOM_BSP               := true
@@ -32,10 +30,8 @@ COMMON_GLOBAL_CFLAGS               += -DQCOM_BSP
 
 TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
 
+BOARD_VENDOR := samsung
 AUDIO_FEATURE_ENABLED_EXTN_FORMATS := true
-#BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := $(TARGET_BOARD_PLATFORM)
-#BOARD_VENDOR_QCOM_LOC_PDK_FEATURE_SET := true
-#TARGET_NO_RPC := true
 
 # Kernel
 BOARD_CUSTOM_BOOTIMG_MK      := $(LOCAL_PATH)/mkbootimg.mk
@@ -46,9 +42,8 @@ BOARD_KERNEL_TAGS_OFFSET     := 0x01E00000
 BOARD_RAMDISK_OFFSET         := 0x02000000
 BOARD_KERNEL_PAGESIZE        := 2048
 BOARD_KERNEL_SEPARATED_DT    := true
-
-
 TARGET_KERNEL_SELINUX_CONFIG        := selinux_defconfig
+
 
 # Partition sizes
 TARGET_USERIMAGES_USE_EXT4          := true
@@ -96,26 +91,23 @@ PROTOBUF_SUPPORTED                  := true
 EXTENDED_FONT_FOOTPRINT             := true
 
 # malloc implementation
-MALLOC_IMPL                         := dlmalloc
+MALLOC_IMPL                         := jemalloc
 
 
 # Audio
-TARGET_QCOM_AUDIO_VARIANT                    := caf
+TARGET_QCOM_AUDIO_VARIANT                     := caf
 BOARD_USES_ALSA_AUDIO                         := true
 AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS    := true
-USE_CUSTOM_AUDIO_POLICY              := 1
-TARGET_USES_QCOM_MM_AUDIO            := true
+USE_CUSTOM_AUDIO_POLICY                       := 1
+TARGET_USES_QCOM_MM_AUDIO                     := true
 
 # Charger
 BOARD_CHARGER_DISABLE_INIT_BLANK	     := true
-BOARD_CHARGER_SHOW_PERCENTAGE        := true
-BOARD_CHARGER_ENABLE_SUSPEND         := true
-BOARD_CHARGING_MODE_BOOTING_LPM      := /sys/class/power_supply/battery/batt_lp_charging
+BOARD_CHARGER_SHOW_PERCENTAGE        	     := true
+BOARD_CHARGER_ENABLE_SUSPEND         	     := true
+BOARD_CHARGING_MODE_BOOTING_LPM      	     := /sys/class/power_supply/battery/batt_lp_charging
 BOARD_USES_OPENSSL_SYMBOLS := true
 BACKLIGHT_PATH                       := "/sys/class/leds/lcd-backlight/brightness"
-
-
-
 
 # Enable QCOM FM feature
 AUDIO_FEATURE_ENABLED_FM             := true
@@ -127,7 +119,7 @@ TARGET_HW_DISK_ENCRYPTION            := true
 TARGET_POWERHAL_VARIANT              := qcom
 CM_POWERHAL_EXTENSION                := qcom
 
-TARGET_QCOM_MEDIA_VARIANT           := caf
+TARGET_QCOM_MEDIA_VARIANT            := caf
 
 # Vold
 TARGET_USE_CUSTOM_LUN_FILE_PATH      := /sys/devices/platform/msm_hsusb/gadget/lun%d/file

@@ -11,6 +11,9 @@ persist.radio.add_power_save=1
 ro.telephony.ril.config=simactivation
 ro.ril.telephony.mqanelements=6
 
+net.qtaguid_enabled=0
+media.sf.extractor-plugin=libffmpeg_extractor.so
+media.sf.omx-plugin=libffmpeg_omx.so
 # Data modules (For evolution RIL model)
 ro.use_data_netmgrd=false
 persist.data.netmgrd.qos.enable=false
@@ -131,7 +134,7 @@ sysprof.activitythread.slowloop=300
 sysprof.choreographer.skip=15
 sysprof.inputdispatcher.slow=500
 sysprof.inputdispatcher.stale=500
-
+ro.cm.hardware.cabc=/sys/class/lcd/panel/power_reduce
 # DHA
 ro.config.dha_frag_enable=0
 persist.hwc.mdpcomp.enable=true
@@ -146,4 +149,5 @@ ro.sys.fw.bservice_limit=5
 ro.sys.fw.bservice_age=5000
 ro.sys.fw.trim_enable_memory=734003200
 ro.min_freq=400000
-
+ro.min_freq_0=400000
+persist.gps.qmienabled=true

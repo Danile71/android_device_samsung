@@ -8,6 +8,8 @@
 /dev/sec-nfc		  	u:object_r:nfc_device:s0
 /dev/i2c-1  			u:object_r:audio_device:s0
 
+
+/dev/smdcntl[0-12]*	u:object_r:radio_device:s0
 # Camera
 /sys/devices/virtual/camera(/.*)?       u:object_r:sysfs_camera:s0
 /data/cam_socket.*                      u:object_r:camera_socket:s0

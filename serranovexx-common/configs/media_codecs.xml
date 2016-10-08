@@ -166,6 +166,10 @@ ___________________________________________________
         </MediaCodec>
     </Encoders>
     <Decoders>
+        <MediaCodec name="OMX.ffmpeg.flac.decoder"   type="audio/flac" >
+            <Limit name="channel-count" max="8" />
+            <Limit name="sample-rate" ranges="8000-192000" />
+        </MediaCodec>
         <!-- Audio Hardware  -->
         <MediaCodec name="OMX.qcom.audio.decoder.amrwbplus" type="audio/amr-wb-plus" >
         </MediaCodec>

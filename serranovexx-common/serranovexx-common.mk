@@ -52,6 +52,7 @@ PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/rootdir/init.target.rc:root/init.target.rc \
 	$(LOCAL_PATH)/rootdir/init.qcom.usb.rc:root/init.qcom.usb.rc \
 	$(LOCAL_PATH)/rootdir/init.qcom.factory.sh:root/init.qcom.factory.sh \
+        $(LOCAL_PATH)/rootdir/charger_fix.sh:root/charger_fix.sh.sh \
 	$(LOCAL_PATH)/rootdir/init.class_main.sh:root/init.class_main.sh \
 	$(LOCAL_PATH)/rootdir/init.mdm.sh:root/init.mdm.sh \
 	$(LOCAL_PATH)/rootdir/init.qcom.bms.sh:root/init.qcom.bms.sh \
@@ -143,9 +144,6 @@ PRODUCT_PACKAGES += \
     wpa_supplicant \
     wpa_supplicant.conf
 	
-# Doze
-#PRODUCT_PACKAGES += \
-#    SamsungDoze
 	
 
 

@@ -19,9 +19,6 @@ $(call inherit-product-if-exists, vendor/samsung/serranoveltexx/serranoveltexx-v
 # Inherit from fortuna-common
 $(call inherit-product, device/samsung/serranovexx-common/serranovexx-common.mk)
 
-# Enhanced NFC
-$(call inherit-product, vendor/cm/config/nfc_enhanced.mk)
-
 # Common overlay
 DEVICE_PACKAGE_OVERLAYS += device/samsung/serranoveltexx/overlay
 

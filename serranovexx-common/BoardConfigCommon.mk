@@ -1,9 +1,11 @@
 # inherit from qcom-common
 -include device/samsung/qcom-common/BoardConfigCommon.mk
+
 # Inherit from the proprietary version
 -include vendor/samsung/serranovexx-common/BoardConfigVendor.mk
 
 LOCAL_PATH := device/samsung/serranovexx-common
+
 
 
 # Platform
@@ -13,8 +15,8 @@ TARGET_BOOTLOADER_BOARD_NAME    := MSM8916
 BLOCK_BASED_OTA 		:= false
 
 # Arch
-TARGET_GLOBAL_CFLAGS            += -mfpu=neon -mfloat-abi=softfp
-TARGET_GLOBAL_CPPFLAGS          += -mfpu=neon -mfloat-abi=softfp
+#TARGET_GLOBAL_CFLAGS            += -mfpu=neon -mfloat-abi=softfp
+#TARGET_GLOBAL_CPPFLAGS          += -mfpu=neon -mfloat-abi=softfp
 TARGET_CPU_VARIANT              := cortex-a53
 TARGET_CPU_CORTEX_A53           := true
 ARCH_ARM_HAVE_TLS_REGISTER      := true
@@ -26,7 +28,7 @@ BOARD_USES_QC_TIME_SERVICES        := true
 TARGET_USES_QCOM_BSP               := true
 TARGET_PLATFORM_DEVICE_BASE        := /devices/soc.0/
 HAVE_SYNAPTICS_I2C_RMI4_FW_UPGRADE := true
-COMMON_GLOBAL_CFLAGS               += -DQCOM_BSP
+#COMMON_GLOBAL_CFLAGS               += -DQCOM_BSP
 
 TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
 
@@ -90,10 +92,6 @@ PROTOBUF_SUPPORTED                  := true
 # Fonts
 EXTENDED_FONT_FOOTPRINT             := true
 
-# malloc implementation
-MALLOC_IMPL                         := jemalloc
-
-
 # Audio
 TARGET_QCOM_AUDIO_VARIANT                     := caf
 BOARD_USES_ALSA_AUDIO                         := true
@@ -108,18 +106,24 @@ BOARD_CHARGER_ENABLE_SUSPEND         	     := true
 BOARD_CHARGING_MODE_BOOTING_LPM      	     := /sys/class/power_supply/battery/batt_lp_charging
 BOARD_USES_OPENSSL_SYMBOLS := true
 BACKLIGHT_PATH                       := "/sys/class/leds/lcd-backlight/brightness"
+CHARGING_ENABLED_PATH                := /sys/class/power_supply/battery/batt_lp_charging
 
 # Enable QCOM FM feature
 AUDIO_FEATURE_ENABLED_FM             := true
-
+TARGET_SKIP_PRODUCT_DEVICE          := true
 # Enable HW based full disk encryption
 TARGET_HW_DISK_ENCRYPTION            := true
 
 # Build our own PowerHAL
 TARGET_POWERHAL_VARIANT              := qcom
-CM_POWERHAL_EXTENSION                := qcom
+TARGET_POWERHAL_SET_INTERACTIVE_EXT  := $(LOCAL_PATH)/power/power_ext.c
 
 TARGET_QCOM_MEDIA_VARIANT            := caf
+
+
+TARGET_KERNEL_CROSS_COMPILE_PREFIX := arm-eabi-
+KERNEL_TOOLCHAIN              := $(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin
+TARGET_KERNEL_CONFIG          := msm8916_fortuna3g_eur_defconfig
 
 # Vold
 TARGET_USE_CUSTOM_LUN_FILE_PATH      := /sys/devices/platform/msm_hsusb/gadget/lun%d/file
@@ -131,6 +135,9 @@ BOARD_SUPPRESS_EMMC_WIPE 	     := true
 # Camera
 TARGET_PROVIDES_CAMERA_HAL           := true
 USE_DEVICE_SPECIFIC_CAMERA           := true
+TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
+TARGET_HAS_LEGACY_CAMERA_HAL1          := true
+BOARD_GLOBAL_CFLAGS                    += -DMETADATA_CAMERA_SOURCE
 
 # Media
 TARGET_ENABLE_QC_AV_ENHANCEMENTS    := true
@@ -149,7 +156,6 @@ TARGET_RECOVERY_QCOM_RTC_FIX := true
 
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGB_565"
-WITH_DEXPREOPT := true
 
 # Boot animation
 TARGET_SCREEN_WIDTH                 := 540
@@ -166,27 +172,15 @@ BOARD_RECOVERY_SWIPE 				:= true
 BOARD_USE_CUSTOM_RECOVERY_FONT 	        	:= \"roboto_23x41.h\"
 BOARD_USES_MMCUTILS 				:= true
 BOARD_RECOVERY_NEEDS_FBIOPAN_DISPLAY:=true
+
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
 TARGET_RECOVERY_DEVICE_DIRS += device/samsung/qcom-common
 BOARD_HAS_DOWNLOAD_MODE := true
-COMMON_GLOBAL_CFLAGS += -DNO_SECURE_DISCARD
-	
 
 # Releasetools
 TARGET_RELEASETOOLS_EXTENSIONS                  := $(LOCAL_PATH)
 
-# Dex
-ifeq ($(HOST_OS),linux)
-  ifeq ($(TARGET_BUILD_VARIANT),user)
-    ifeq ($(WITH_DEXPREOPT),)
-      WITH_DEXPREOPT := true
-    endif
-  endif
-endif
-
-
-
-TARGET_SPECIFIC_HEADER_PATH :=  device/samsung/serranovexx-common/include
+TARGET_SPECIFIC_HEADER_PATH :=  $(LOCAL_PATH)/include
 
 BOARD_NFC_CHIPSET := pn547
 BOARD_NFC_LPM_LOSES_CONFIG := true

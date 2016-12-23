@@ -1,12 +1,11 @@
-ro.product.device=serranove3gxx
+ro.product.device=serranoveltexx
 # RIL
 rild.libpath=/system/lib/libsec-ril.so
-rild.libpath2=/system/lib/libsec-ril-dsds.so
 rild.libargs=-d /dev/smd0
 DEVICE_PROVISIONED=1
 persist.radio.rat_on=combine
 ro.telephony.ril_class=SamsungQcom3GDSRIL
-telephony.lteOnGsmDevice=0
+telephony.lteOnGsmDevice=1
 persist.radio.apm_sim_not_pwdn=1
 persist.radio.add_power_save=1
 ro.telephony.ril.config=simactivation
@@ -15,15 +14,14 @@ ro.ril.telephony.mqanelements=6
 net.qtaguid_enabled=0
 media.sf.extractor-plugin=libffmpeg_extractor.so
 media.sf.omx-plugin=libffmpeg_omx.so
-
 # Data modules (For evolution RIL model)
 ro.use_data_netmgrd=false
 persist.data.netmgrd.qos.enable=false
 wifi.supplicant_scan_interval=180
 persist.radio.multisim.config=dsds
 ro.multisim.simslotcount=2
-persist.dsds.enabled=true
 persist.sys.isUsbOtgEnabled=true
+
 # Display
 ro.sf.lcd_density=240
 ro.opengles.version=196608
@@ -35,11 +33,13 @@ media.stagefright.enable-aac=true
 media.stagefright.enable-qcp=true
 media.stagefright.enable-fma2dp=true
 media.stagefright.enable-scan=true
+media.stagefright.legacyencoder=true
+media.stagefright.less-secure=true
 media.swhevccodectype=0
 mm.enable.smoothstreaming=true
 media.aac_51_output_enabled=true
 vidc.enc.narrow.searchrange=1
-qcom.hw.aac.encoder=true
+qcom.hw.aac.encoder=false
 
 # Camera
 ro.device.rear_cam=8 MP
@@ -55,20 +55,21 @@ persist.audio.fluence.voicerec=false
 persist.audio.fluence.speaker=true
 tunnel.audio.encode = false
 # Audio offload
-audio.offload.buffer.size.kb=64
+audio.offload.buffer.size.kb=32
 audio.offload.gapless.enabled=true
 audio.offload.min.duration.secs=30
 audio.offload.pcm.16bit.enable=true
 audio.offload.pcm.24bit.enable=true
-audio.offload.video=true
-av.offload.enable=true
-av.streaming.offload.enable=false
+#audio.offload.video=true
+#av.offload.enable=true
+#av.streaming.offload.enable=false
 
 # Wi-Fi, Bluetooth
 wifi.interface=wlan0
 ro.bluetooth.hfp.ver=1.6
 ro.qualcomm.bt.hci_transport=smd
 ro.fm.transmitter=false
+qcom.bluetooth.soc=smd
 
 # Misc.
 ro.product_ship=true
@@ -81,6 +82,10 @@ ro.sys.fw.use_trim_settings=true
 # GPS
 persist.gps.qc_nlp_in_use=1
 ro.gps.agps_provider=1
+ro.qc.sdk.izat.premium_enabled=0
+ro.qc.sdk.izat.service_mask=0x0
+
+ro.config.zram=true
 
 #system props for time-services
 persist.timed.enable=true
@@ -110,7 +115,7 @@ persist.rild.nitz_short_ons_3=
 persist.radio.rat_on=combine
 ro.ril.multi_rat_capable=false
 persist.radio.flexmap_type=nw_mode
-ro.telephony.default_network=3
+ro.telephony.default_network=9
 
 dalvik.vm.heapstartsize=8m
 dalvik.vm.heapgrowthlimit=192m
@@ -152,5 +157,5 @@ ro.sys.fw.bservice_age=5000
 ro.sys.fw.trim_enable_memory=734003200
 ro.min_freq=400000
 ro.min_freq_0=400000
-
+ro.product.model=I9192I
 persist.gps.qmienabled=true

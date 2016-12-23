@@ -22,11 +22,12 @@
 
 # Inherit from common
 -include device/samsung/serranovexx-common/BoardConfigCommon.mk
+LOCAL_PATH := device/samsung/serranove3gxx
 SAMSUNG_TARGETS := serranove3gxx
 
 
 # Assert
-TARGET_OTA_ASSERT_DEVICE := samsung_sm_I9192I
+TARGET_OTA_ASSERT_DEVICE := samsung_sm_I9192I,serranove3gxx,serranovelte
 
 # Misc.
 TARGET_SYSTEM_PROP                              := device/samsung/serranove3gxx/system.prop

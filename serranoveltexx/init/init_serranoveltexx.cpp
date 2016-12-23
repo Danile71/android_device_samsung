@@ -35,28 +35,19 @@
 #include "log.h"
 #include "util.h"
 
-#define ISMATCH(a,b)    (!strncmp(a,b,PROP_VALUE_MAX))
-
-void vendor_load_properties()
+void init_target_properties()
 {
-    char platform[PROP_VALUE_MAX];
-    char bootloader[PROP_VALUE_MAX];
-    char device[PROP_VALUE_MAX];
-    char devicename[PROP_VALUE_MAX];
-    int rc;
-
-    rc = property_get("ro.board.platform", platform);
-    if (!rc || !ISMATCH(platform, ANDROID_TARGET))
+    std::string platform = property_get("ro.board.platform");
+    if (platform != ANDROID_TARGET)
         return;
 
-    property_get("ro.bootloader", bootloader);
+    std::string bootloader = property_get("ro.bootloader"); 
 
-    property_set("ro.build.fingerprint", "samsung/serranoveltexx/serranovelte:6.0.1/LRX22G/I9195IXXU2BPG1:user/release-keys");
-    property_set("ro.build.description", "serranoveltexx-user 6.0.	 LRX22G I9195IXXU2BPG1 release-keys");
+    property_set("ro.build.fingerprint", "samsung/serranoveltexx/serranovelte:7.1/LRX22G/I9195IXXU2BPG1:user/release-keys");
+    property_set("ro.build.description", "serranoveltexx-user 7.1.	 LRX22G I9195IXXU2BPG1 release-keys");
     property_set("ro.product.model", "I9195I");
     property_set("ro.product.device", "serranoveltexx");
    
-    property_get("ro.product.device", device);
-    strlcpy(devicename, device, sizeof(devicename));
-    INFO("Found bootloader id %s setting build properties for %s device\n", bootloader, devicename);
+    std::string device = property_get("ro.product.device");
+    INFO("Found bootloader id %s setting build properties for %s device\n", bootloader.c_str(), device.c_str());
 }

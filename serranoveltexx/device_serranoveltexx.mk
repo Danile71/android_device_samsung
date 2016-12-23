@@ -18,8 +18,9 @@ $(call inherit-product, $(LOCAL_PATH)/device.mk)
 
 
 # Set those variables here to overwrite the inherited values.
-PRODUCT_NAME := full_serranove3gxx
-PRODUCT_DEVICE := serranove3gxx
+PRODUCT_NAME := cm_serranoveltexx
+PRODUCT_DEVICE := serranoveltexx
 PRODUCT_BRAND := samsung
 PRODUCT_MANUFACTURER := samsung
-PRODUCT_MODEL := I9192I
+PRODUCT_MODEL := I9195I
+

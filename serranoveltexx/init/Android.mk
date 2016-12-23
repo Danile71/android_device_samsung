@@ -8,5 +8,4 @@ LOCAL_CFLAGS := -Wall -DANDROID_TARGET=\"$(TARGET_BOARD_PLATFORM)\"
 LOCAL_SRC_FILES := init_serranoveltexx.cpp
 LOCAL_MODULE := libinit_serranoveltexx
 
-
 include $(BUILD_STATIC_LIBRARY)

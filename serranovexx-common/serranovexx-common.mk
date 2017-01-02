@@ -27,7 +27,6 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
     frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
-    $(LOCAL_PATH)/configs/permissions/platform.xml:system/etc/permissions/platform.xml \
     $(LOCAL_PATH)/configs/permissions/android.hardware.consumerir.xml:system/etc/permissions/android.hardware.consumerir.xml \
     $(LOCAL_PATH)/configs/permissions/android.hardware.audio.low_latency.xml:system/etc/permissions/android.hardware.audio.low_latency.xml \
     $(LOCAL_PATH)/configs/permissions/android.hardware.camera.autofocus.xml:system/etc/permissions/android.hardware.camera.autofocus.xml \
@@ -52,7 +51,7 @@ PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/rootdir/init.target.rc:root/init.target.rc \
 	$(LOCAL_PATH)/rootdir/init.qcom.usb.rc:root/init.qcom.usb.rc \
 	$(LOCAL_PATH)/rootdir/init.qcom.factory.sh:root/init.qcom.factory.sh \
-        $(LOCAL_PATH)/rootdir/charger_fix.sh:root/charger_fix.sh.sh \
+        $(LOCAL_PATH)/rootdir/charger_fix.sh:root/charger_fix.sh \
 	$(LOCAL_PATH)/rootdir/init.class_main.sh:root/init.class_main.sh \
 	$(LOCAL_PATH)/rootdir/init.mdm.sh:root/init.mdm.sh \
 	$(LOCAL_PATH)/rootdir/init.qcom.bms.sh:root/init.qcom.bms.sh \

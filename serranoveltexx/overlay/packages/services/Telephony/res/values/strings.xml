@@ -17,11 +17,13 @@
 <resources>
     
     <string name="Znetwork_4Gp">4G auto</string>
-    <string name="Znetwork_2G">2G only</string>
-    <string name="Znetwork_3G">3G only</string>
-    <string name="Znetwork_2Gp">3G auto</string>
     <string name="Znetwork_4G">4G only</string>
     <string name="Znetwork_43G">3G/4G only</string>
+    <string name="Znetwork_2Gp">3G auto</string>
+    <string name="Znetwork_3G">3G only</string>
+    <string name="Znetwork_2G">2G only</string>
+    
+    
 
      <string-array name="enabled_networks_choices" translatable="false">
         <item>@string/Znetwork_4Gp</item>

@@ -629,13 +629,13 @@
 
     <path name="speaker">
         <path name="spk" />
-        <ctl name="RX3 Digital Volume" value="84" />
+        <ctl name="RX3 Digital Volume" value="79" />
     </path>
 
     <path name="headset">
         <path name="ear" />
-        <ctl name="RX1 Digital Volume" value="84" />
-        <ctl name="RX2 Digital Volume" value="84" />
+        <ctl name="RX1 Digital Volume" value="81" />
+        <ctl name="RX2 Digital Volume" value="81" />
     </path>
 
     <path name="dock">
@@ -647,16 +647,16 @@
 
     <path name="headphones">
         <path name="ear" />
-        <ctl name="RX1 Digital Volume" value="90" />
-        <ctl name="RX2 Digital Volume" value="90" />
+        <ctl name="RX1 Digital Volume" value="81" />
+        <ctl name="RX2 Digital Volume" value="81" />
         <ctl name="EAR PA Gain" value="POS_1P5_DB" />	
     </path>
 
     <path name="speaker-and-headphones">
         <path name="spk-ear" />
-        <ctl name="RX1 Digital Volume" value="90" />
-        <ctl name="RX2 Digital Volume" value="90" />
-        <ctl name="RX3 Digital Volume" value="90" />
+        <ctl name="RX1 Digital Volume" value="56" />
+        <ctl name="RX2 Digital Volume" value="56" />
+        <ctl name="RX3 Digital Volume" value="79" />
         <ctl name="EAR PA Gain" value="POS_1P5_DB" />	
     </path>
 
@@ -680,13 +680,13 @@
 
     <path name="fm-speaker">
         <path name="spk" />
-        <ctl name="RX3 Digital Volume" value="90" />
+        <ctl name="RX3 Digital Volume" value="78" />
     </path>	
 
     <path name="fm-headset">
         <path name="ear" />
-        <ctl name="RX1 Digital Volume" value="90" />
-        <ctl name="RX2 Digital Volume" value="90" />
+        <ctl name="RX1 Digital Volume" value="83" />
+        <ctl name="RX2 Digital Volume" value="83" />
         <ctl name="EAR PA Gain" value="POS_1P5_DB" />
     </path>
 
@@ -874,7 +874,7 @@
 
     <path name="voice-call-speaker">
         <path name="spk" />
-        <ctl name="RX3 Digital Volume" value="90" />
+        <ctl name="RX3 Digital Volume" value="79" />
     </path>
 
     <path name="voice-call-speaker-extra-vol">
@@ -889,8 +889,8 @@
 
     <path name="voice-call-headset">
         <path name="ear" />
-        <ctl name="RX1 Digital Volume" value="90" />
-        <ctl name="RX2 Digital Volume" value="90" />
+        <ctl name="RX1 Digital Volume" value="84" />
+        <ctl name="RX2 Digital Volume" value="84" />
         <ctl name="EAR PA Gain" value="POS_1P5_DB" />	
     </path>
 
@@ -900,8 +900,8 @@
     <!-- TX part -->
     <path name="voice-call-main-mic">
         <path name="main-mic" />
-        <ctl name="DEC1 Volume" value="80" />
-        <ctl name="ADC1 Volume" value="7" />
+        <ctl name="DEC1 Volume" value="84" />
+        <ctl name="ADC1 Volume" value="4" />
     </path>
 
     <path name="voice-call-main-mic-emergency">

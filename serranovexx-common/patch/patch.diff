@@ -1,36 +1,18 @@
 project frameworks/base/
 diff --git a/location/java/android/location/GpsStatus.java b/location/java/android/location/GpsStatus.java
-index 323f326..c00c666 100644
+index b601cde..5cf89e0 100644
 --- a/location/java/android/location/GpsStatus.java
 +++ b/location/java/android/location/GpsStatus.java
-@@ -17,7 +17,7 @@
- package android.location;
- 
- import android.util.SparseArray;
-
- import java.util.Iterator;
- import java.util.NoSuchElementException;
- 
-@@ -162,7 +162,8 @@ public final class GpsStatus {
-                 satellite.mAzimuth = azimuths[i];
-                 satellite.mHasEphemeris = ((ephemerisMask & prnShift) != 0);
-                 satellite.mHasAlmanac = ((almanacMask & prnShift) != 0);
--                satellite.mUsedInFix = ((usedInFixMask & prnShift) != 0);
-+		//satellite.mUsedInFix = ((usedInFixMask & prnShift) != 0);
-+		if(snrs[i]>0)satellite.mUsedInFix = true;
+@@ -190,6 +190,7 @@ public final class GpsStatus {
+                         (svidWithFlags[i] & GnssStatus.GNSS_SV_FLAGS_HAS_ALMANAC_DATA) != 0;
+                 satellite.mUsedInFix =
+                         (svidWithFlags[i] & GnssStatus.GNSS_SV_FLAGS_USED_IN_FIX) != 0;
++            if (satellite.mSnr > 0) satellite.mUsedInFix = true;
              }
          }
      }
-@@ -176,7 +177,7 @@ public final class GpsStatus {
-     void setStatus(GpsStatus status) {
-         mTimeToFirstFix = status.getTimeToFirstFix();
-         clearSatellites();
-
-         SparseArray<GpsSatellite> otherSatellites = status.mSatellites;
-         int otherSatellitesCount = otherSatellites.size();
-         int satelliteIndex = 0;
 diff --git a/services/core/java/com/android/server/display/DisplayManagerService.java b/services/core/java/com/android/server/display/DisplayManagerService.java
-index 6a6570b..0b79126 100644
+index 971989b..a7c96fe 100644
 --- a/services/core/java/com/android/server/display/DisplayManagerService.java
 +++ b/services/core/java/com/android/server/display/DisplayManagerService.java
 @@ -62,6 +62,8 @@ import com.android.server.UiThread;
@@ -51,12 +33,11 @@ index 6a6570b..0b79126 100644
  
      // The synchronization root for the display manager.
      // This lock guards most of the display manager's state.
-@@ -698,6 +702,40 @@ public final class DisplayManagerService extends SystemService {
+@@ -708,6 +712,38 @@ public final class DisplayManagerService extends SystemService {
          scheduleTraversalLocked(false);
      }
  
-+// Writes to sysfs node, returns true if success, false if fail
-+    private boolean write_sysfs(String path, boolean on) {
++     private boolean write_sysfs(String path, boolean on) {
 +        try {
 +            FileOutputStream fos = new FileOutputStream(path);
 +            byte[] bytes = new byte[2];
@@ -71,7 +52,6 @@ index 6a6570b..0b79126 100644
 +        return true;
 +    }
 +	
-+	// Enables or disables input devices by writing to sysfs path
 +    private void enableDevices(boolean enable) {
 +        boolean ret;
 +        if(enable) {
@@ -92,131 +72,71 @@ index 6a6570b..0b79126 100644
      private void handleDisplayDeviceChanged(DisplayDevice device) {
          synchronized (mSyncRoot) {
              DisplayDeviceInfo info = device.getDisplayDeviceInfoLocked();
-@@ -710,6 +748,12 @@ public final class DisplayManagerService extends SystemService {
+@@ -720,6 +756,8 @@ public final class DisplayManagerService extends SystemService {
              if (diff == DisplayDeviceInfo.DIFF_STATE) {
                  Slog.i(TAG, "Display device changed state: \"" + info.name
                          + "\", " + Display.stateToString(info.state));
-+	    if(info.state == Display.STATE_ON){
-+					enableDevices(true);
-+				}
-+				if (info.state == Display.STATE_OFF) {
-+					enableDevices(false);
-+				}
++		if (info.state == Display.STATE_ON ) enableDevices(true);
++		if (info.state == Display.STATE_OFF ) enableDevices(false);
              } else if (diff != 0) {
                  Slog.i(TAG, "Display device changed: " + info);
              }
-diff --git a/services/core/jni/com_android_server_location_GpsLocationProvider.cpp b/services/core/jni/com_android_server_location_GpsLocationProvider.cpp
-index 91eeb8b..561d1bf 100644
---- a/services/core/jni/com_android_server_location_GpsLocationProvider.cpp
-+++ b/services/core/jni/com_android_server_location_GpsLocationProvider.cpp
-@@ -765,7 +765,7 @@ static void android_location_GpsLocationProvider_agps_data_conn_open(
-     size_t interface_size = sAGpsInterface->size;
-     if (interface_size == sizeof(AGpsInterface_v2)) {
-         sAGpsInterface->data_conn_open_with_apn_ip_type(apnStr, apnIpType);
--    } else if (interface_size == sizeof(AGpsInterface_v1)) {
-+    } else if (interface_size >= sizeof(AGpsInterface_v1)) {
-         sAGpsInterface->data_conn_open(apnStr);
-     } else {
-         ALOGE("Invalid size of AGpsInterface found: %zd.", interface_size);
-diff --git a/telephony/java/android/telephony/TelephonyManager.java b/telephony/java/android/telephony/TelephonyManager.java
-index 5ec6950..21b2db9 100644
---- a/telephony/java/android/telephony/TelephonyManager.java
-+++ b/telephony/java/android/telephony/TelephonyManager.java
-@@ -3385,49 +3385,21 @@ public class TelephonyManager {
-      * @hide
-      */
-     public static void setTelephonyProperty(int phoneId, String property, String value) {
--        String propVal = "";
--        String p[] = null;
--        String prop = SystemProperties.get(property);
- 
--        if (value == null) {
--            value = "";
--        }
--
--        if (prop != null) {
--            p = prop.split(",");
--        }
- 
-         if (!SubscriptionManager.isValidPhoneId(phoneId)) {
-             Rlog.d(TAG, "setTelephonyProperty: invalid phoneId=" + phoneId +
--                    " property=" + property + " value: " + value + " prop=" + prop);
-+                   " property=" + property + " value: " + value);
-             return;
-         }
- 
--        for (int i = 0; i < phoneId; i++) {
--            String str = "";
--            if ((p != null) && (i < p.length)) {
--                str = p[i];
--            }
--            propVal = propVal + str + ",";
--        }
--
--        propVal = propVal + value;
--        if (p != null) {
--            for (int i = phoneId + 1; i < p.length; i++) {
--                propVal = propVal + "," + p[i];
--            }
--        }
--
--        if (property.length() > SystemProperties.PROP_NAME_MAX
--                || propVal.length() > SystemProperties.PROP_VALUE_MAX) {
--            Rlog.d(TAG, "setTelephonyProperty: property to long phoneId=" + phoneId +
--                    " property=" + property + " value: " + value + " propVal=" + propVal);
--            return;
--        }
-+        if (phoneId > 0) {
-+            property += "_" + phoneId;
-+	}
- 
-         Rlog.d(TAG, "setTelephonyProperty: success phoneId=" + phoneId +
--                " property=" + property + " value: " + value + " propVal=" + propVal);
--        SystemProperties.set(property, propVal);
-+                " property=" + property + " value: " + value);
-+        SystemProperties.set(property, value);
-     }
- 
-     /**
-@@ -3524,15 +3496,18 @@ public class TelephonyManager {
-      * @hide
-      */
-     public static String getTelephonyProperty(int phoneId, String property, String defaultVal) {
--        String propVal = null;
--        String prop = SystemProperties.get(property);
--        if ((prop != null) && (prop.length() > 0)) {
--            String values[] = prop.split(",");
--            if ((phoneId >= 0) && (phoneId < values.length) && (values[phoneId] != null)) {
--                propVal = values[phoneId];
--            }
--        }
--        return propVal == null ? defaultVal : propVal;
-+             if (!SubscriptionManager.isValidPhoneId(phoneId)) {
-+            Rlog.d(TAG, "getTelephonyProperty: invalid phoneId=" + phoneId +
-+                    " property=" + property);
-+            return defaultVal;
-+        }
-+
-+        if (phoneId > 0) {
-+            property += "_" + phoneId;
-+         }
-+		
-+		String propVal = SystemProperties.get(property);
-+        return propVal.isEmpty() ? defaultVal : propVal;
-     }
- 
-     /** @hide */
 
 project hardware/qcom/fm/
+diff --git a/fmapp2/src/com/caf/fmradio/FMRadio.java b/fmapp2/src/com/caf/fmradio/FMRadio.java
+index 94a7526..69ceed7 100644
+--- a/fmapp2/src/com/caf/fmradio/FMRadio.java
++++ b/fmapp2/src/com/caf/fmradio/FMRadio.java
+@@ -1932,6 +1932,8 @@ public class FMRadio extends Activity
+       enableRadioOnOffUI(bEnable);
+    }
+ 
++
++
+    private void enableRadioOnOffUI(boolean bEnable) {
+       if (mMuteButton != null) {
+           mMuteButton.setEnabled(bEnable);
+@@ -2670,6 +2672,23 @@ public class FMRadio extends Activity
+       }//handleMessage
+    };
+ 
++@Override
++public boolean onKeyDown(int keyCode, KeyEvent event) {
++ AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
++    switch (keyCode) {
++    case KeyEvent.KEYCODE_VOLUME_UP:
++        audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
++                AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
++        return true;
++    case KeyEvent.KEYCODE_VOLUME_DOWN:
++        audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
++                AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
++        return true;
++    default:
++        return super.onKeyDown(keyCode, event);
++    }
++}
++  
+    private void resetFMStationInfoUI() {
+       mTunedStation.setFrequency(FmSharedPreferences.getTunedFrequency());
+       mTunedStation.setName("");
 diff --git a/fmapp2/src/com/caf/fmradio/FMRadioService.java b/fmapp2/src/com/caf/fmradio/FMRadioService.java
-index 887c228..557ad79 100644
+index 887c228..4bd9d61 100644
 --- a/fmapp2/src/com/caf/fmradio/FMRadioService.java
 +++ b/fmapp2/src/com/caf/fmradio/FMRadioService.java
-@@ -99,6 +99,31 @@ import android.bluetooth.BluetoothA2dp;
+@@ -93,12 +93,39 @@ import android.os.StatFs;
+ import android.os.SystemClock;
+ import android.os.Process;
+ import android.app.ActivityManager;
++import android.app.Activity;
+ import android.app.ActivityManager.RunningAppProcessInfo;
+ import android.media.session.MediaSession;
+ import android.bluetooth.BluetoothA2dp;
  import android.bluetooth.BluetoothProfile;
  import android.bluetooth.BluetoothAdapter;
  import android.bluetooth.BluetoothDevice;
 +import android.database.ContentObserver;
++
 +
 +class SettingsContentObserver extends ContentObserver {
 +    Context context;
@@ -244,7 +164,7 @@ index 887c228..557ad79 100644
  
  /**
   * Provides "background" FM Radio (that uses the hardware) capabilities,
-@@ -220,6 +245,7 @@ public class FMRadioService extends Service
+@@ -220,6 +247,7 @@ public class FMRadioService extends Service
     private Notification.Builder mRadioNotification;
     private Notification mNotificationInstance;
     private NotificationManager mNotificationManager;
@@ -252,52 +172,70 @@ index 887c228..557ad79 100644
  
     private static final int FM_OFF_FROM_APPLICATION = 1;
     private static final int FM_OFF_FROM_ANTENNA = 2;
-@@ -273,7 +299,8 @@ public class FMRadioService extends Service
+@@ -232,7 +260,6 @@ public class FMRadioService extends Service
+    @Override
+    public void onCreate() {
+       super.onCreate();
+-
+       mPrefs = new FmSharedPreferences(this);
+       mCallbacks = null;
+       TelephonyManager tmgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+@@ -273,6 +300,8 @@ public class FMRadioService extends Service
        String valueStr = audioManager.getParameters("isA2dpDeviceSupported");
        mA2dpDeviceSupportInHal = valueStr.contains("=true");
        Log.d(LOGTAG, " is A2DP device Supported In HAL"+mA2dpDeviceSupportInHal);
--
 +      mSettingsContentObserver = new SettingsContentObserver(this,new Handler());
 +      getApplicationContext().getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, mSettingsContentObserver );
+ 
        getA2dpStatusAtStart();
     }
- 
-@@ -343,7 +370,7 @@ public class FMRadioService extends Service
+@@ -343,6 +372,7 @@ public class FMRadioService extends Service
  
        TelephonyManager tmgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
        tmgr.listen(mPhoneStateListener, 0);
--
 +      getApplicationContext().getContentResolver().unregisterContentObserver(mSettingsContentObserver);
+ 
        Log.d(LOGTAG, "onDestroy: unbindFromService completed");
  
-       //unregisterReceiver(mIntentReceiver);
-@@ -1066,14 +1093,25 @@ public class FMRadioService extends Service
+@@ -1042,7 +1072,7 @@ public class FMRadioService extends Service
+ 
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int granted = audioManager.requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC,
+-              AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
++              AudioManager.AUDIOFOCUS_GAIN);
+        if(granted != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+           Log.d(LOGTAG, "audio focuss couldnot be granted");
+           return;
+@@ -1051,6 +1081,8 @@ public class FMRadioService extends Service
+ 
+        Log.d(LOGTAG,"FM registering for registerMediaButtonEventReceiver");
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
++       int currvol = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
++       float vol = (float) currvol / 100;
+        ComponentName fmRadio = new ComponentName(this.getPackageName(),
+                                   FMMediaButtonIntentReceiver.class.getName());
+        mAudioManager.registerMediaButtonEventReceiver(fmRadio);
+@@ -1066,9 +1098,19 @@ public class FMRadioService extends Service
                 mSpeakerPhoneOn = true;
                 Log.d(LOGTAG, "Audio source set it as speaker");
                 AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_SPEAKER);
++               mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
++               mAudioManager.setSpeakerphoneOn(true);
 +               mAudioManager.setParameters("fm_mode=on");
 +               mAudioManager.setParameters("fm_radio_volume=on");
-+               mAudioManager.setParameters("FMRadioVol=0.1496235728");
-+               mAudioManager.setMode(AudioManager.MODE_IN_CALL);
-+               mAudioManager.setSpeakerphoneOn(true);
++               mAudioManager.setParameters("FMRadioVol=" + vol);
             } else {
                 Log.d(LOGTAG, "Audio source set it as headset");
                 AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
++               mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
 +               mAudioManager.setParameters("fm_mode=on");
 +               mAudioManager.setParameters("fm_radio_volume=on");
-+               mAudioManager.setParameters("FMRadioVol=0.1496235728");
-+               mAudioManager.setMode(AudioManager.MODE_IN_CALL);
-+               mAudioManager.setSpeakerphoneOn(false);
++               mAudioManager.setParameters("FMRadioVol=" + vol);
++	       mAudioManager.setSpeakerphoneOn(false);
             }
         } else {
                 Log.d(LOGTAG, "A2DP is connected, set audio source to A2DP HS");
-                AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_SPEAKER);
-                mSpeakerPhoneOn = true;
-+               mAudioManager.setSpeakerphoneOn(true);
-        }
- 
-        mPlaybackInProgress = true;
-@@ -1090,6 +1128,8 @@ public class FMRadioService extends Service
+@@ -1090,6 +1132,8 @@ public class FMRadioService extends Service
         Log.d(LOGTAG, "In stopFM");
         configureAudioDataPath(false);
         mPlaybackInProgress = false;
@@ -306,88 +244,179 @@ index 887c228..557ad79 100644
         try {
             if ((mServiceInUse) && (mCallbacks != null))
                 mCallbacks.onFmAudioPathStopped();
-@@ -1539,6 +1579,7 @@ public class FMRadioService extends Service
-       public void run() {
-          Log.v(LOGTAG, "Disabling Speaker");
-          AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
-+         mAudioManager.setSpeakerphoneOn(false);
-       }
-    };
- 
-@@ -2257,6 +2298,7 @@ public class FMRadioService extends Service
-       if ( mSpeakerPhoneOn) {
-           mSpeakerPhoneOn = false;
-           AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
-+          mAudioManager.setSpeakerphoneOn(false);
-       }
-    }
- 
-@@ -2376,10 +2418,12 @@ public class FMRadioService extends Service
+@@ -2376,10 +2420,14 @@ public class FMRadioService extends Service
              } else {
                  Log.d(LOGTAG, "A2DP is not connected, force none");
                  AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
-+		 mAudioManager.setSpeakerphoneOn(false);
++                mAudioManager.setMode(AudioManager.MODE_IN_CALL);
++                mAudioManager.setSpeakerphoneOn(false);
              }
         } else if (speakerOn == true) {
             Log.d(LOGTAG, "enabling speaker");
             AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_SPEAKER);
++           mAudioManager.setMode(AudioManager.MODE_IN_CALL);
 +           mAudioManager.setSpeakerphoneOn(true);
         }
  
         Log.d(LOGTAG, "speakerOn completed:" + speakerOn);
-@@ -2480,6 +2524,7 @@ public class FMRadioService extends Service
+@@ -2480,6 +2528,7 @@ public class FMRadioService extends Service
        {
           mMuted = true;
           audioManager.setParameters("fm_mute=1");
-+	  audioManager.setParameters("fm_radio_mute=1");
++         audioManager.setParameters("fm_radio_mute=1");
           if (mAudioTrack != null)
               mAudioTrack.setVolume(0.0f);
        }
-@@ -2502,6 +2547,7 @@ public class FMRadioService extends Service
+@@ -2502,6 +2551,7 @@ public class FMRadioService extends Service
        {
           mMuted = false;
           audioManager.setParameters("fm_mute=0");
-+	  audioManager.setParameters("fm_radio_mute=0");
++         audioManager.setParameters("fm_radio_mute=0");
           if (mAudioTrack != null)
               mAudioTrack.setVolume(1.0f);
           if (mResumeAfterCall)
+@@ -3588,7 +3638,7 @@ public class FMRadioService extends Service
+            // adding code for audio focus gain.
+            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            audioManager.requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC,
+-                  AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
++                  AudioManager.AUDIOFOCUS_GAIN);
+            startFM();
+            mStoppedOnFocusLoss = false;
+        }
 
-project packages/apps/AudioFX/
-diff --git a/Android.mk b/Android.mk
-index e07a2a9..95ffa0d 100644
---- a/Android.mk
-+++ b/Android.mk
-@@ -1,7 +1,7 @@
- LOCAL_PATH := $(call my-dir)
  
- include $(CLEAR_VARS)
--LOCAL_PACKAGE_NAME	:= AudioFX
-+LOCAL_PACKAGE_NAME	:= AudioFX2
- LOCAL_MODULE_TAGS	:= optional
- 
- LOCAL_OVERRIDES_PACKAGES := DSPManager
+
 
 project packages/services/Telecomm/
-diff --git a/src/com/android/server/telecom/CallAudioManager.java b/src/com/android/server/telecom/CallAudioManager.java
-index 32d70f3..3f2ad51 100644
---- a/src/com/android/server/telecom/CallAudioManager.java
-+++ b/src/com/android/server/telecom/CallAudioManager.java
-@@ -134,9 +134,18 @@ final class CallAudioManager extends CallsManagerListenerBase
-                     Call call = mCallsManager.getForegroundCall();
-                     boolean setMsimAudioParams = SystemProperties
-                             .getBoolean("ro.multisim.set_audio_params", false);
-+		    boolean setSamsungRealcallParams = SystemProperties.getBoolean("ro.telephony.samsung.realcall", false);
+diff --git a/src/com/android/server/telecom/CallAudioModeStateMachine.java b/src/com/android/server/telecom/CallAudioModeStateMachine.java
+index dfc7075..56f70f8 100644
+--- a/src/com/android/server/telecom/CallAudioModeStateMachine.java
++++ b/src/com/android/server/telecom/CallAudioModeStateMachine.java
+@@ -22,6 +22,9 @@ import android.os.SystemProperties;
+ import android.telecom.PhoneAccountHandle;
+ import android.telephony.SubscriptionManager;
+ import android.util.SparseArray;
++import android.telephony.SubscriptionInfo;
++import android.content.Context;
++import android.telephony.TelephonyManager;
  
-                     Log.v(this, "Request to change audio mode from %s to %s", modeToString(oldMode),
-                             modeToString(newMode));
-+		    if(setSamsungRealcallParams) {
-+            if(newMode == 0) {
-+                mAudioManager.setParameters("realcall=off");
-+            } else if(newMode == AudioManager.MODE_IN_COMMUNICATION || newMode == AudioManager.MODE_RINGTONE
-+                || newMode == AudioManager.MODE_IN_CALL) {
+ import com.android.internal.util.IState;
+ import com.android.internal.util.State;
+@@ -151,9 +154,14 @@ public class CallAudioModeStateMachine extends StateMachine {
+         public void enter() {
+             if (mIsInitialized) {
+                 Log.i(LOG_TAG, "Abandoning audio focus: now UNFOCUSED");
++		boolean setRealcallAudioParams = SystemProperties
++                    .getBoolean("ro.telephony.samsung.realcall", false);
+                 mAudioManager.abandonAudioFocusForCall();
++ 		if (setRealcallAudioParams) {
++                    mAudioManager.setParameters("realcall=off");
++                }
+                 mAudioManager.setMode(AudioManager.MODE_NORMAL);
+-
++ 
+                 mMostRecentMode = AudioManager.MODE_NORMAL;
+                 mCallAudioManager.setCallAudioRouteFocusState(CallAudioRouteStateMachine.NO_FOCUS);
+             }
+@@ -293,6 +301,8 @@ public class CallAudioModeStateMachine extends StateMachine {
+             boolean setMsimAudioParams = SystemProperties
+                     .getBoolean("ro.multisim.set_audio_params", false);
+             Call call = mCallAudioManager.getForegroundCall();
++	    boolean setRealcallAudioParams = SystemProperties
++                    .getBoolean("ro.telephony.samsung.realcall", false);	
+ 
+             mAudioManager.requestAudioFocusForCall(AudioManager.STREAM_VOICE_CALL,
+                     AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+@@ -305,6 +315,9 @@ public class CallAudioModeStateMachine extends StateMachine {
+                 } else if (phoneId == 1) {
+                     mAudioManager.setParameters("phone_type=cp2");
+                 }
++	    if (setRealcallAudioParams) {
 +                    mAudioManager.setParameters("realcall=on");
-+            }
-+        }
++                }
+             }
  
-                     if (oldMode != newMode) {
-                         if (oldMode == AudioManager.MODE_IN_CALL &&
+             mAudioManager.setMode(AudioManager.MODE_IN_CALL);
+@@ -365,14 +378,20 @@ public class CallAudioModeStateMachine extends StateMachine {
+         private int getPhoneId(Call call) {
+             if (call.getTargetPhoneAccount() != null) {
+                 PhoneAccountHandle account = call.getTargetPhoneAccount();
++		Context mContext = call.getContext();
++		SubscriptionInfo mSubscriptionInfo;
++		String subId = account.getId();
++		int phoneId = -1;
+                 try {
+-                    int index = Integer.parseInt(account.getId());
+-                    int phoneId = SubscriptionManager.getPhoneId(index);
++                    for (int i=SubscriptionManager.from(mContext).getAllSubscriptionInfoCount()-1;i>=0;i--) {
++	            mSubscriptionInfo  = SubscriptionManager.from(mContext).getActiveSubscriptionInfoForSimSlotIndex(i);
++		    if (subId.contains(mSubscriptionInfo.getIccId()) ) phoneId = i;
++		    }
+                     if (SubscriptionManager.isValidPhoneId(phoneId)) {
+                         return phoneId;
+                     }
+                 } catch (NumberFormatException e) {
+-                    Log.e(LOG_TAG, e, "Cannot get phoneId from ID value " + account.getId());
++                    Log.e(LOG_TAG, e, "Cannot get phoneId from ID value " + phoneId);
+                 }
+             }
+             return -1;
+
+project packages/services/Telephony/
+diff --git a/src/com/android/phone/MobileNetworkSettings.java b/src/com/android/phone/MobileNetworkSettings.java
+index 8766fb6..4ca007e 100644
+--- a/src/com/android/phone/MobileNetworkSettings.java
++++ b/src/com/android/phone/MobileNetworkSettings.java
+@@ -822,6 +822,11 @@ public class MobileNetworkSettings extends PreferenceActivity
+                 int modemNetworkMode;
+                 // if new mode is invalid ignore it
+                 switch (buttonNetworkMode) {
++		     case Phone.NT_MODE_WCDMA_ONLY:
++                    case Phone.NT_MODE_LTE_ONLY:
++		     case Phone.NT_MODE_LTE_WCDMA:
+                     case Phone.NT_MODE_WCDMA_PREF:
+                     case Phone.NT_MODE_GSM_ONLY:
+                     case Phone.NT_MODE_LTE_GSM_WCDMA:
+@@ -1076,6 +1081,18 @@ public class MobileNetworkSettings extends PreferenceActivity
+                 mButtonEnabledNetworks.setSummary(R.string.network_3G);
+                 break;
+             case Phone.NT_MODE_WCDMA_ONLY:
++                if (!mIsGlobalCdma) {
++                    mButtonEnabledNetworks.setValue(
++                            Integer.toString(Phone.NT_MODE_WCDMA_ONLY));
++                    mButtonEnabledNetworks.setSummary(R.string.network_3G);
++                } else {
++                    mButtonEnabledNetworks.setValue(
++                            Integer.toString(Phone.NT_MODE_LTE_CDMA_EVDO_GSM_WCDMA));
++                    mButtonEnabledNetworks.setSummary(R.string.network_global);
++                }
++		break;
++
++
+             case Phone.NT_MODE_GSM_UMTS:
+             case Phone.NT_MODE_WCDMA_PREF:
+                 if (!mIsGlobalCdma) {
+@@ -1108,10 +1125,21 @@ public class MobileNetworkSettings extends PreferenceActivity
+                     break;
+                 }
+             case Phone.NT_MODE_LTE_ONLY:
++  		if (!mIsGlobalCdma) {
++                    mButtonEnabledNetworks.setValue(
++                            Integer.toString(Phone.NT_MODE_LTE_ONLY));
++                    mButtonEnabledNetworks.setSummary((mShow4GForLTE == true)
++                            ? R.string.network_4G : R.string.network_lte);
++                } else {
++                    mButtonEnabledNetworks.setValue(
++                            Integer.toString(Phone.NT_MODE_LTE_CDMA_EVDO_GSM_WCDMA));
++                    mButtonEnabledNetworks.setSummary(R.string.network_global);
++                }
++                break;
+             case Phone.NT_MODE_LTE_WCDMA:
+                 if (!mIsGlobalCdma) {
+                     mButtonEnabledNetworks.setValue(
+-                            Integer.toString(Phone.NT_MODE_LTE_GSM_WCDMA));
++                            Integer.toString(Phone.NT_MODE_LTE_WCDMA));
+                     mButtonEnabledNetworks.setSummary((mShow4GForLTE == true)
+                             ? R.string.network_4G : R.string.network_lte);
+                 } else {

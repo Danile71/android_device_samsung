@@ -266,7 +266,13 @@ PRODUCT_PACKAGES += \
     AdvancedDisplay \
     Stk \
     Stk2
-	
+#GPS	
+PRODUCT_PACKAGES += \
+    gps.msm8916 \
+    libloc_core \
+    libloc_eng  \
+    libgps.utils
+
 # USB
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     persist.sys.usb.config=mtp

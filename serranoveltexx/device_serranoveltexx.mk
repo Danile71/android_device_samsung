@@ -1,4 +1,4 @@
-# Copyright (C) 2015 The CyanogenMod Project
+# Copyright (C) 2015 The LineageOS Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ $(call inherit-product, $(LOCAL_PATH)/device.mk)
 
 
 # Set those variables here to overwrite the inherited values.
-PRODUCT_NAME := cm_serranoveltexx
+PRODUCT_NAME := lineage_serranoveltexx
 PRODUCT_DEVICE := serranoveltexx
 PRODUCT_BRAND := samsung
 PRODUCT_MANUFACTURER := samsung

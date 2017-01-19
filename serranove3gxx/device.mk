@@ -21,3 +21,10 @@ $(call inherit-product, device/samsung/serranovexx-common/serranovexx-common.mk)
 
 # Common overlay
 DEVICE_PACKAGE_OVERLAYS += device/samsung/serranove3gxx/overlay
+
+PRODUCT_PROPERTY_OVERRIDES += \
+	persist.radio.multisim.config=dsds \
+	ro.multisim.simslotcount=2 \
+	ro.ril.multi_rat_capable=true \
+	ro.product.model=I9192I
+

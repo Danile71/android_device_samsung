@@ -22,6 +22,14 @@ $(call inherit-product, device/samsung/serranovexx-common/serranovexx-common.mk)
 # Common overlay
 DEVICE_PACKAGE_OVERLAYS += device/samsung/serranoveltexx/overlay
 
+PRODUCT_PROPERTY_OVERRIDES += \
+	persist.radio.multisim.config=none \
+	ro.multisim.simslotcount=1 \
+	ro.ril.multi_rat_capable=false \
+	ro.product.model=I9195I
+
+
+
 # NFC
 PRODUCT_PACKAGES += \
 	NfcNci \

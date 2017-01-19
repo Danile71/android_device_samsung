@@ -99,10 +99,10 @@
          Zone N + 1     array[N] <= LUX < infinity
          Must be overridden in platform specific overlays -->
     <integer-array name="config_autoBrightnessLevels">
-        <item>15</item>
-        <item>150</item>
-        <item>1000</item>
-        <item>5000</item>
+        <item>5</item>
+        <item>10</item>
+        <item>30</item>
+        <item>100</item>
     </integer-array>
 
     <!-- Array of output values for LCD backlight corresponding to the LUX values
@@ -144,37 +144,37 @@
     <integer-array name="config_longPressVibePattern">
         <item>0</item>
         <item>1</item>
-        <item>20</item>
-        <item>21</item>
+        <item>80</item>
+        <item>81</item>
     </integer-array>
 
     <!-- Vibrator pattern for feedback about touching a virtual key -->
     <integer-array name="config_virtualKeyVibePattern">
         <item>0</item>
         <item>1</item>
-        <item>20</item>
-        <item>21</item>
+        <item>80</item>
+        <item>81</item>
     </integer-array>
 
     <!-- Vibrator pattern for a very short but reliable vibration for soft keyboard tap -->
     <integer-array name="config_keyboardTapVibePattern">
-        <item>20</item>
+        <item>80</item>
     </integer-array>
 
     <!-- Vibrator pattern for feedback about booting with safe mode disabled -->
     <integer-array name="config_safeModeDisabledVibePattern">
         <item>0</item>
         <item>1</item>
-        <item>20</item>
-        <item>21</item>
+        <item>80</item>
+        <item>81</item>
     </integer-array>
 
     <!-- Vibrator pattern for feedback about booting with safe mode disabled -->
     <integer-array name="config_safeModeEnabledVibePattern">
         <item>0</item>
         <item>1</item>
-        <item>20</item>
-        <item>21</item>
+        <item>80</item>
+        <item>81</item>
         <item>500</item>
         <item>600</item>
     </integer-array>
@@ -182,9 +182,9 @@
     <!-- Vibrator pattern for feedback about hitting a scroll barrier -->
     <integer-array name="config_scrollBarrierVibePattern">
         <item>0</item>
-        <item>15</item>
-        <item>10</item>
-        <item>10</item>
+        <item>45</item>
+        <item>40</item>
+        <item>40</item>
     </integer-array>
 	
     <!-- Indicate whether closing the lid causes the device to go to sleep and opening

@@ -22,23 +22,17 @@
 
 # Inherit from common
 -include device/samsung/serranovexx-common/BoardConfigCommon.mk
-LOCAL_PATH := device/samsung/serranove3gxx
-SAMSUNG_TARGETS := serranove3gxx
+LOCAL_PATH                           := device/samsung/serranove3gxx
 
+SAMSUNG_TARGETS                      := serranove3gxx
 
 # Assert
 TARGET_OTA_ASSERT_DEVICE := samsung_sm_I9192I,serranove3gxx,serranovelte
 
-# Misc.
-TARGET_SYSTEM_PROP                              := device/samsung/serranove3gxx/system.prop
-
 # Kernel
-TARGET_KERNEL_SOURCE         := kernel/samsung/serranovexx
-TARGET_KERNEL_CONFIG := msm8916_sec_defconfig
 TARGET_KERNEL_VARIANT_CONFIG := msm8916_sec_serranovelte_eur_defconfig
 
 # Vendor Init
-TARGET_UNIFIED_DEVICE                := true
 TARGET_INIT_VENDOR_LIB               := libinit_serranove3gxx
 TARGET_RECOVERY_DEVICE_MODULES       := libinit_serranove3gxx
 

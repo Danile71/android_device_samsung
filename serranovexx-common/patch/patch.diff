@@ -1,16 +1,4 @@
 project frameworks/base/
-diff --git a/location/java/android/location/GpsStatus.java b/location/java/android/location/GpsStatus.java
-index b601cde..5cf89e0 100644
---- a/location/java/android/location/GpsStatus.java
-+++ b/location/java/android/location/GpsStatus.java
-@@ -190,6 +190,7 @@ public final class GpsStatus {
-                         (svidWithFlags[i] & GnssStatus.GNSS_SV_FLAGS_HAS_ALMANAC_DATA) != 0;
-                 satellite.mUsedInFix =
-                         (svidWithFlags[i] & GnssStatus.GNSS_SV_FLAGS_USED_IN_FIX) != 0;
-+            if (satellite.mSnr > 0) satellite.mUsedInFix = true;
-             }
-         }
-     }
 diff --git a/services/core/java/com/android/server/display/DisplayManagerService.java b/services/core/java/com/android/server/display/DisplayManagerService.java
 index 971989b..a7c96fe 100644
 --- a/services/core/java/com/android/server/display/DisplayManagerService.java
@@ -420,3 +408,4 @@ index 8766fb6..4ca007e 100644
                      mButtonEnabledNetworks.setSummary((mShow4GForLTE == true)
                              ? R.string.network_4G : R.string.network_lte);
                  } else {
+

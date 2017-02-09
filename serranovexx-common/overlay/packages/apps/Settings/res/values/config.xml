@@ -19,5 +19,7 @@
     <!-- Volume Rocker Wake Support. Some devices do not support (PMU) this.
          Setting to false will disable Volume Rocker Wake support -->
     <bool name="config_show_volumeRockerWake">true</bool>
-<bool name="config_enableColorTemperature">true</bool>
+    <bool name="config_enableColorTemperature">true</bool>
+    <bool name="config_storage_manager_settings_enabled">true</bool>
+    <bool name="config_voice_over_lte_enabled">true</bool>
 </resources>

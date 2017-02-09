@@ -88,6 +88,7 @@ EXTENDED_FONT_FOOTPRINT              := true
 
 # Audio
 TARGET_QCOM_AUDIO_VARIANT            := caf
+BOARD_HAVE_QCOM_FM                   := true
 BOARD_USES_ALSA_AUDIO                := true
 AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS := true
 USE_CUSTOM_AUDIO_POLICY              := 1

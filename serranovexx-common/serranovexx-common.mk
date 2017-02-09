@@ -204,6 +204,7 @@ PRODUCT_PACKAGES += \
       
 # Gello
 PRODUCT_PACKAGES += \
+    WeatherManagerService \
     Gello	
 
 # OMX

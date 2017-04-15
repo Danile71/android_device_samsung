@@ -868,7 +868,8 @@ swapon_all fstab.qcom
     chmod 777 /proc/uid_cputime/show_uid_stat
 
 # Set cpufreq
-        write  /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor smartassV2
+#        write  /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor smartassV2
+        write  /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
 #write  /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq "200000" 
 	write  /sys/devices/system/cpu/cpufreq/smartassV2/awake_ideal_freq "800000"
 	write  /sys/devices/system/cpu/cpufreq/smartassV2/sleep_ideal_freq "200000"
@@ -1192,6 +1193,11 @@ service qmuxd /system/bin/qmuxd
     user root
     group radio audio bluetooth gps qcom_diag
     
+
+on property:sys.boot_completed=1
+    # Symlink directories to access telephony.db and preferred-apn.xml required by cbd
+    symlink /data/user_de/0/com.android.providers.telephony/databases /data/data/com.android.providers.telephony/databases
+    symlink /data/user_de/0/com.android.providers.telephony/shared_prefs /data/data/com.android.providers.telephony/shared_prefs
 
 service netmgrd /system/bin/netmgrd
     class main

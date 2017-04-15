@@ -108,8 +108,6 @@ CHARGING_ENABLED_PATH                := /sys/class/power_supply/battery/batt_lp_
 # Enable QCOM FM feature
 AUDIO_FEATURE_ENABLED_FM             := true
 TARGET_SKIP_PRODUCT_DEVICE           := true
-# Enable HW based full disk encryption
-TARGET_HW_DISK_ENCRYPTION            := true
 
 # Build our own PowerHAL
 TARGET_POWERHAL_VARIANT              := qcom

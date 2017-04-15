@@ -1,3 +1,4 @@
+
 project frameworks/base/
 diff --git a/services/core/java/com/android/server/display/DisplayManagerService.java b/services/core/java/com/android/server/display/DisplayManagerService.java
 index 971989b..b611ba4 100644
@@ -66,10 +67,10 @@ index 971989b..b611ba4 100644
 
 project hardware/qcom/fm/
 diff --git a/fmapp2/src/com/caf/fmradio/FMRadio.java b/fmapp2/src/com/caf/fmradio/FMRadio.java
-index 94a7526..ac86e94 100644
+index fe63f55..fddec26 100644
 --- a/fmapp2/src/com/caf/fmradio/FMRadio.java
 +++ b/fmapp2/src/com/caf/fmradio/FMRadio.java
-@@ -2670,6 +2670,23 @@ public class FMRadio extends Activity
+@@ -2688,6 +2688,23 @@ public class FMRadio extends Activity
        }//handleMessage
     };
  
@@ -94,18 +95,10 @@ index 94a7526..ac86e94 100644
        mTunedStation.setFrequency(FmSharedPreferences.getTunedFrequency());
        mTunedStation.setName("");
 diff --git a/fmapp2/src/com/caf/fmradio/FMRadioService.java b/fmapp2/src/com/caf/fmradio/FMRadioService.java
-index 887c228..97e188c 100644
+index 426071b..700f8fe 100644
 --- a/fmapp2/src/com/caf/fmradio/FMRadioService.java
 +++ b/fmapp2/src/com/caf/fmradio/FMRadioService.java
-@@ -92,6 +92,7 @@ import android.content.ComponentName;
- import android.os.StatFs;
- import android.os.SystemClock;
- import android.os.Process;
-+import android.app.Activity;
- import android.app.ActivityManager;
- import android.app.ActivityManager.RunningAppProcessInfo;
- import android.media.session.MediaSession;
-@@ -99,6 +100,31 @@ import android.bluetooth.BluetoothA2dp;
+@@ -99,6 +99,31 @@ import android.bluetooth.BluetoothA2dp;
  import android.bluetooth.BluetoothProfile;
  import android.bluetooth.BluetoothAdapter;
  import android.bluetooth.BluetoothDevice;
@@ -137,15 +130,15 @@ index 887c228..97e188c 100644
  
  /**
   * Provides "background" FM Radio (that uses the hardware) capabilities,
-@@ -220,6 +246,7 @@ public class FMRadioService extends Service
+@@ -228,6 +253,7 @@ public class FMRadioService extends Service
     private Notification.Builder mRadioNotification;
     private Notification mNotificationInstance;
     private NotificationManager mNotificationManager;
 +   private SettingsContentObserver mSettingsContentObserver;
  
-    private static final int FM_OFF_FROM_APPLICATION = 1;
-    private static final int FM_OFF_FROM_ANTENNA = 2;
-@@ -273,6 +300,8 @@ public class FMRadioService extends Service
+    public FMRadioService() {
+    }
+@@ -276,6 +302,8 @@ public class FMRadioService extends Service
        String valueStr = audioManager.getParameters("isA2dpDeviceSupported");
        mA2dpDeviceSupportInHal = valueStr.contains("=true");
        Log.d(LOGTAG, " is A2DP device Supported In HAL"+mA2dpDeviceSupportInHal);
@@ -154,7 +147,7 @@ index 887c228..97e188c 100644
  
        getA2dpStatusAtStart();
     }
-@@ -343,6 +372,7 @@ public class FMRadioService extends Service
+@@ -346,6 +374,7 @@ public class FMRadioService extends Service
  
        TelephonyManager tmgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
        tmgr.listen(mPhoneStateListener, 0);
@@ -162,47 +155,39 @@ index 887c228..97e188c 100644
  
        Log.d(LOGTAG, "onDestroy: unbindFromService completed");
  
-@@ -1050,6 +1080,8 @@ public class FMRadioService extends Service
-        mSession.setActive(true);
+@@ -1076,6 +1105,9 @@ public class FMRadioService extends Service
  
-        Log.d(LOGTAG,"FM registering for registerMediaButtonEventReceiver");
+        mStoppedOnFocusLoss = false;
+ 
 +       int currvol = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 +       float vol = (float) currvol / 100;
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        ComponentName fmRadio = new ComponentName(this.getPackageName(),
-                                   FMMediaButtonIntentReceiver.class.getName());
-@@ -1064,13 +1096,23 @@ public class FMRadioService extends Service
-            //need not be retained by the Audio Manager.
-            if (isSpeakerEnabled()) {
-                mSpeakerPhoneOn = true;
--               Log.d(LOGTAG, "Audio source set it as speaker");
--               AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_SPEAKER);
--           } else {
--               Log.d(LOGTAG, "Audio source set it as headset");
--               AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
--           }
--       } else {
-+                Log.d(LOGTAG, "Audio source set it as speaker");
-+                AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_SPEAKER);
-+               mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-+               mAudioManager.setSpeakerphoneOn(true);
-+               mAudioManager.setParameters("fm_mode=on");
-+               mAudioManager.setParameters("fm_radio_volume=on");
-+               mAudioManager.setParameters("FMRadioVol=" + vol);
-+            } else {
-+                Log.d(LOGTAG, "Audio source set it as headset");
-+                AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
-+               mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-+               mAudioManager.setParameters("fm_mode=on");
-+               mAudioManager.setParameters("fm_radio_volume=on");
-+               mAudioManager.setParameters("FMRadioVol=" + vol);
-+	       mAudioManager.setSpeakerphoneOn(false);
-+            }
-+        } else {
-                Log.d(LOGTAG, "A2DP is connected, set audio source to A2DP HS");
++
+        if (mStoppedOnFactoryReset) {
+            mStoppedOnFactoryReset = false;
+            mSpeakerPhoneOn = false;
+@@ -1084,6 +1116,21 @@ public class FMRadioService extends Service
+                String temp = mA2dpConnected ? "A2DP HS" : "Speaker";
+                Log.d(LOGTAG, "Route audio to " + temp);
                 AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_SPEAKER);
-                mSpeakerPhoneOn = true;
-@@ -1090,6 +1132,8 @@ public class FMRadioService extends Service
++               if (mA2dpConnected) {
++                       mAudioManager.setMode(AudioManager.MODE_IN_CALL);
++                       mAudioManager.setSpeakerphoneOn(true);
++                       mAudioManager.setParameters("fm_mode=on");
++                       mAudioManager.setParameters("fm_radio_volume=on");
++                       mAudioManager.setParameters("FMRadioVol=" + vol);
++               }
++       } else {
++               mAudioManager.setMode(AudioManager.MODE_IN_CALL);
++               mAudioManager.setSpeakerphoneOn(false);
++               mAudioManager.setParameters("fm_mode=on");
++               mAudioManager.setParameters("fm_radio_volume=on");
++               mAudioManager.setParameters("fm_mute=0");
++               mAudioManager.setParameters("fm_radio_mute=0");
++               mAudioManager.setParameters("FMRadioVol=" + vol);
+        }
+ 
+        mPlaybackInProgress = true;
+@@ -1100,6 +1147,8 @@ public class FMRadioService extends Service
         Log.d(LOGTAG, "In stopFM");
         configureAudioDataPath(false);
         mPlaybackInProgress = false;
@@ -211,22 +196,63 @@ index 887c228..97e188c 100644
         try {
             if ((mServiceInUse) && (mCallbacks != null))
                 mCallbacks.onFmAudioPathStopped();
-@@ -2376,10 +2420,14 @@ public class FMRadioService extends Service
+@@ -1564,6 +1613,9 @@ public class FMRadioService extends Service
+       public void run() {
+          Log.v(LOGTAG, "Disabling Speaker");
+          AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
++         mAudioManager.setSpeakerphoneOn(false);
++         mAudioManager.setParameters("fm_mode=on");
++         mAudioManager.setParameters("fm_radio_volume=on");
+       }
+    };
+ 
+@@ -2261,6 +2313,10 @@ public class FMRadioService extends Service
+            } else {
+                Log.d(LOGTAG, "A2DP is not connected, force none");
+                AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
++               mAudioManager.setMode(AudioManager.MODE_IN_CALL);
++               mAudioManager.setSpeakerphoneOn(false);
++               mAudioManager.setParameters("fm_mode=on");
++               mAudioManager.setParameters("fm_radio_volume=on");
+            }
+        }
+    }
+@@ -2330,6 +2386,9 @@ public class FMRadioService extends Service
+       if ( mSpeakerPhoneOn) {
+           mSpeakerPhoneOn = false;
+           AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
++          mAudioManager.setSpeakerphoneOn(false);
++          mAudioManager.setParameters("fm_mode=on");
++          mAudioManager.setParameters("fm_radio_volume=on");
+       }
+    }
+ 
+@@ -2450,6 +2509,9 @@ public class FMRadioService extends Service
+ 
+        mSpeakerPhoneOn = speakerOn;
+ 
++       int currvol = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
++       float vol = (float) currvol / 100;
++
+        if (speakerOn == false) {
+             if (mA2dpConnected == true) {
+                 Log.d(LOGTAG, "A2DP connected, de-select BT");
+@@ -2457,10 +2519,14 @@ public class FMRadioService extends Service
              } else {
                  Log.d(LOGTAG, "A2DP is not connected, force none");
                  AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
-+		mAudioManager.setMode(AudioManager.MODE_IN_CALL);
 +                mAudioManager.setSpeakerphoneOn(false);
++                mAudioManager.setParameters("FMRadioVol=" + vol);
              }
         } else if (speakerOn == true) {
             Log.d(LOGTAG, "enabling speaker");
             AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_SPEAKER);
-+	   mAudioManager.setMode(AudioManager.MODE_IN_CALL);
 +           mAudioManager.setSpeakerphoneOn(true);
++           mAudioManager.setParameters("FMRadioVol=" + vol);
         }
  
         Log.d(LOGTAG, "speakerOn completed:" + speakerOn);
-@@ -2480,6 +2528,7 @@ public class FMRadioService extends Service
+@@ -2561,6 +2627,7 @@ public class FMRadioService extends Service
        {
           mMuted = true;
           audioManager.setParameters("fm_mute=1");
@@ -234,7 +260,7 @@ index 887c228..97e188c 100644
           if (mAudioTrack != null)
               mAudioTrack.setVolume(0.0f);
        }
-@@ -2502,6 +2551,7 @@ public class FMRadioService extends Service
+@@ -2583,6 +2650,7 @@ public class FMRadioService extends Service
        {
           mMuted = false;
           audioManager.setParameters("fm_mute=0");
@@ -242,10 +268,15 @@ index 887c228..97e188c 100644
           if (mAudioTrack != null)
               mAudioTrack.setVolume(1.0f);
           if (mResumeAfterCall)
+@@ -3865,3 +3933,4 @@ public class FMRadioService extends Service
+         mStoppedOnFactoryReset = true;
+    }
+ }
++
 
 project packages/services/Telecomm/
 diff --git a/src/com/android/server/telecom/CallAudioModeStateMachine.java b/src/com/android/server/telecom/CallAudioModeStateMachine.java
-index e6ad9d5..f3ed386 100644
+index cc71aec..8163d98 100644
 --- a/src/com/android/server/telecom/CallAudioModeStateMachine.java
 +++ b/src/com/android/server/telecom/CallAudioModeStateMachine.java
 @@ -25,6 +25,9 @@ import android.telecom.TelecomManager;
@@ -293,7 +324,7 @@ index e6ad9d5..f3ed386 100644
 
 project packages/services/Telephony/
 diff --git a/src/com/android/phone/MobileNetworkSettings.java b/src/com/android/phone/MobileNetworkSettings.java
-index 2434599..0ed30a0 100644
+index 061183a..2e1418f 100644
 --- a/src/com/android/phone/MobileNetworkSettings.java
 +++ b/src/com/android/phone/MobileNetworkSettings.java
 @@ -813,6 +813,9 @@ public class MobileNetworkSettings extends PreferenceActivity
@@ -346,4 +377,3 @@ index 2434599..0ed30a0 100644
                      mButtonEnabledNetworks.setSummary((mShow4GForLTE == true)
                              ? R.string.network_4G : R.string.network_lte);
                  } else {
-
